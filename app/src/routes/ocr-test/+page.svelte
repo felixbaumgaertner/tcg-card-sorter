@@ -3,6 +3,7 @@
 	import { asset } from '$app/paths';
 	import { cardByPrint } from '../../lib/cards';
 	import { parsePrintedCode, type PrintedCode } from '../../lib/code';
+	import { offCentre } from '../../lib/reader/card';
 	import { parseDictionary, readPicture, type Line, type Model, type Models } from '../../lib/reader/reader';
 
 	type Engine = 'wasm' | 'webgpu';
@@ -58,6 +59,26 @@
 	let tally = $state<Entry[]>(JSON.parse(localStorage.getItem(TALLY_KEY) ?? '[]'));
 	let copied = $state(false);
 	let lastCode: string | null = null;
+	let flash = $state(false);
+
+	// Sound for "card counted". Phones often ignore the buzz (silent mode, system setting), so
+	// there is a short beep and a green flash as well. The sound must be unlocked by a tap, which
+	// "Start camera" is.
+	let audio: AudioContext | null = null;
+	function signal() {
+		navigator.vibrate?.(80);
+		flash = true;
+		setTimeout(() => (flash = false), 400);
+		if (!audio) return;
+		const tone = audio.createOscillator();
+		const volume = audio.createGain();
+		tone.frequency.value = 880;
+		volume.gain.setValueAtTime(0.2, audio.currentTime);
+		volume.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.15);
+		tone.connect(volume).connect(audio.destination);
+		tone.start();
+		tone.stop(audio.currentTime + 0.15);
+	}
 	const tallyText = $derived(tally.map((e, i) => `${i + 1}\t${e.code}\t${e.name}\t${e.ms} ms`).join('\n'));
 
 	function addToTally(r: Result) {
@@ -67,7 +88,7 @@
 		if (!confirmed || tally.at(-1)?.code === code) return;
 		tally = [...tally, { code: code!, name: r.cardName ?? 'not in the card list', ms: r.ms }];
 		localStorage.setItem(TALLY_KEY, JSON.stringify(tally));
-		navigator.vibrate?.(80);
+		signal();
 	}
 
 	function removeLast() {
@@ -134,7 +155,7 @@
 		const ctx = scratch.getContext('2d', { willReadFrequently: true })!;
 		ctx.drawImage(source, 0, 0);
 		const pixels = ctx.getImageData(0, 0, width, height);
-		const found = await readPicture(pixels, m, { detSide, accept });
+		const found = await readPicture(pixels, m, { detSide, accept, rank: offCentre });
 		const code = found.lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
 		return {
 			ms: Math.round(performance.now() - t0),
@@ -198,6 +219,8 @@
 	async function startCamera() {
 		error = null;
 		busy = true;
+		audio ??= new AudioContext();
+		void audio.resume();
 		try {
 			stream = await navigator.mediaDevices.getUserMedia({
 				audio: false,
@@ -239,7 +262,8 @@
 <main>
 	<h1>Reader test</h1>
 	<p>
-		Start the camera and hold the phone about 11 cm above one card. The card can lie any way round.
+		Start the camera and hold the phone about 11 cm above one card, with the card in the middle of
+		the picture. The card can lie any way round.
 		The page keeps reading the printed code by itself and adds every new card to a tally. Nothing
 		leaves this device.
 	</p>
@@ -271,7 +295,7 @@
 		</button>
 	{/if}
 	<!-- svelte-ignore a11y_media_has_caption -->
-	<video bind:this={video} playsinline muted class:hidden={!live}></video>
+	<video bind:this={video} playsinline muted class:hidden={!live} class:flash></video>
 	{#if live}
 		<p class="meta">
 			Camera {cameraInfo}
@@ -299,8 +323,8 @@
 		<section>
 			<h2>Tally: {tally.length} {tally.length === 1 ? 'card' : 'cards'}</h2>
 			<p class="meta">
-				A card is added when it was read twice in a row; then the phone buzzes. Swap the card after
-				the buzz. The newest is on top.
+				A card is added when it was read twice in a row; then the phone beeps and the picture gets a
+				green frame. Swap the card after that. The newest is on top.
 			</p>
 			<ol reversed>
 				{#each tally.toReversed() as entry, i (tally.length - i)}
@@ -367,6 +391,9 @@
 		margin-top: 0.5rem;
 		border-radius: 0.5rem;
 		background: #000;
+	}
+	video.flash {
+		outline: 6px solid #2da44e;
 	}
 	video.hidden {
 		display: none;

@@ -51,11 +51,16 @@ export interface ReadOptions {
 	/** Longest side of the shrunk picture used to find text. Smaller is faster. */
 	detSide?: number;
 	/**
-	 * A slanted rectangle does not say which way up the text is. Lines are read one way first.
-	 * If `accept` is given and likes none of them, they are read the other way up as well.
-	 * Reading stops at the first line `accept` likes.
+	 * Says whether a line of text is what is being looked for. With it, every line is also tried
+	 * the other way up (a slanted rectangle does not say which way up its text is), and reading
+	 * stops at the first line it likes.
 	 */
 	accept?: (text: string) => boolean;
+	/**
+	 * Lines are read in the order of this number, smallest first. Together with `accept` this
+	 * decides which line wins when several would be accepted. `flip`: read the other way up.
+	 */
+	rank?: (box: Box, flip: boolean, width: number, height: number) => number;
 	/**
 	 * The detection model is weaker on text that runs up and down. If nothing was accepted, turn
 	 * the picture a quarter and search once more. Needs `accept`. Default: on.
@@ -406,7 +411,7 @@ export async function readPicture(pic: Picture, models: Models, options: ReadOpt
 }
 
 async function readOnce(pic: Picture, models: Models, options: ReadOptions): Promise<ReadResult> {
-	const { detSide = 1440, accept } = options;
+	const { detSide = 1440, accept, rank } = options;
 	const now = () => performance.now();
 
 	const t0 = now();
@@ -427,27 +432,28 @@ async function readOnce(pic: Picture, models: Models, options: ReadOptions): Pro
 		.filter((b) => b.w >= b.h * 1.5);
 	const t1 = now();
 
-	const pass = async (flip: boolean): Promise<Line[]> => {
-		const lines: Line[] = [];
-		for (const box of boxes) {
-			const input = lineInput(pic, box, flip);
-			const out = await models.recognition(input.data, [1, 3, LINE_HEIGHT, input.width]);
-			const { text, confidence } = decodeLine(out, models.chars);
-			if (text) lines.push({ text, confidence, box });
-			// The code is all that is wanted; the remaining lines are not worth the time.
-			if (accept?.(text)) break;
-		}
-		return lines;
-	};
+	// A slanted rectangle does not say which way up its text is, so with `accept` every box is a
+	// candidate twice: as found, and the other way up. Candidates are read in `rank` order (without
+	// `rank`: all as found first) until one is accepted.
+	const candidates = boxes.flatMap((box) => (accept ? [false, true] : [false]).map((flip) => ({ box, flip })));
+	const key = (c: { box: Box; flip: boolean }) =>
+		rank ? rank(c.box, c.flip, pic.width, pic.height) : c.flip ? 1 : 0;
+	candidates.sort((a, b) => key(a) - key(b));
 
-	let lines = await pass(false);
+	const read: (Line & { flip: boolean })[] = [];
 	let flipped = false;
-	if (accept && !lines.some((l) => accept(l.text))) {
-		const other = await pass(true);
-		if (other.some((l) => accept(l.text))) {
-			lines = other;
-			flipped = true;
+	for (const { box, flip } of candidates) {
+		const input = lineInput(pic, box, flip);
+		const out = await models.recognition(input.data, [1, 3, LINE_HEIGHT, input.width]);
+		const { text, confidence } = decodeLine(out, models.chars);
+		if (text) read.push({ text, confidence, box, flip });
+		// The code is all that is wanted; the remaining lines are not worth the time.
+		if (accept?.(text)) {
+			flipped = flip;
+			break;
 		}
 	}
+	// Report the lines read the same way up as the winner; the others are mostly nonsense.
+	const lines: Line[] = read.filter((l) => l.flip === flipped).map(({ flip: _flip, ...line }) => line);
 	return { lines, flipped, turned: false, detMs: Math.round(t1 - t0), recMs: Math.round(now() - t1), boxes: boxes.length };
 }

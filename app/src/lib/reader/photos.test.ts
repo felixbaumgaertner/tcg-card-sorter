@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parsePrintedCode } from '../code';
+import { offCentre } from './card';
 import { parseDictionary, readPicture, type Model, type Models, type Picture } from './reader';
 
 const photos = join(__dirname, '../../../../test-photos/2026-11-26');
@@ -64,7 +65,7 @@ describe.skipIf(!existsSync(photos))('test photos', () => {
 			const report: string[] = [];
 			for (const [file, id] of Object.entries({ ...expected, ...hard })) {
 				for (const turns of process.env.ALL_TURNS ? [0, 1, 2, 3] : [0]) {
-					const result = await readPicture(await loadPicture(file, turns), models, { detSide: side, accept });
+					const result = await readPicture(await loadPicture(file, turns), models, { detSide: side, accept, rank: offCentre });
 					const got = result.lines.map((l) => parsePrintedCode(l.text)).find((c) => c)?.id ?? null;
 					report.push(
 						`${file.slice(13, 19)} turn ${turns}: ${got ?? 'none'} (${result.boxes} boxes, find ${result.detMs} ms, read ${result.recMs} ms${result.flipped ? ', flipped' : ''}${result.turned ? ', turned' : ''})`
