@@ -27,7 +27,9 @@
 	type Engine = 'wasm' | 'webgpu';
 	let reader: Reader | null = null;
 	let readerEngine: Engine | null = null;
-	let engine = $state<Engine>('wasm');
+	// On a Pixel 7a one try took 50 s with WASM and 5 s with WebGPU (1280 px), so WebGPU is the
+	// default wherever the browser has it.
+	let engine = $state<Engine>('gpu' in navigator ? 'webgpu' : 'wasm');
 	let maxSide = $state(2016);
 	let status = $state('Not loaded yet. Pick a photo to start.');
 	let loadMs = $state<number | null>(null);
@@ -146,8 +148,8 @@
 		<label>
 			Engine
 			<select bind:value={engine} disabled={busy}>
-				<option value="wasm">Processor (WASM)</option>
 				<option value="webgpu">Graphics chip (WebGPU)</option>
+				<option value="wasm">Processor (WASM)</option>
 			</select>
 		</label>
 		<label>
