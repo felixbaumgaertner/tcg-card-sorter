@@ -46,8 +46,9 @@
 	let light = $state(true);
 	let cameraInfo = $state('');
 
-	// Tally: every card read from the live camera, once. A new entry is added when the code
-	// differs from the entry before it, so holding the phone over one card adds it only once.
+	// Tally: every card read from the live camera, once. A code is added when it was read twice in
+	// a row (a single read can come from a card that is still moving) and differs from the entry
+	// before it, so holding the phone over one card adds it only once.
 	interface Entry {
 		code: string;
 		name: string;
@@ -56,13 +57,15 @@
 	const TALLY_KEY = 'ocr-test-tally';
 	let tally = $state<Entry[]>(JSON.parse(localStorage.getItem(TALLY_KEY) ?? '[]'));
 	let copied = $state(false);
+	let lastCode: string | null = null;
 	const tallyText = $derived(tally.map((e, i) => `${i + 1}\t${e.code}\t${e.name}\t${e.ms} ms`).join('\n'));
 
 	function addToTally(r: Result) {
-		if (!r.code) return;
-		const code = `${r.code.set} ${r.code.number}${r.code.total ? `/${r.code.total}` : ''}`;
-		if (tally.at(-1)?.code === code) return;
-		tally = [...tally, { code, name: r.cardName ?? 'not in the card list', ms: r.ms }];
+		const code = r.code ? `${r.code.set} ${r.code.number}${r.code.total ? `/${r.code.total}` : ''}` : null;
+		const confirmed = code !== null && code === lastCode;
+		lastCode = code;
+		if (!confirmed || tally.at(-1)?.code === code) return;
+		tally = [...tally, { code: code!, name: r.cardName ?? 'not in the card list', ms: r.ms }];
 		localStorage.setItem(TALLY_KEY, JSON.stringify(tally));
 		navigator.vibrate?.(80);
 	}
@@ -296,7 +299,8 @@
 		<section>
 			<h2>Tally: {tally.length} {tally.length === 1 ? 'card' : 'cards'}</h2>
 			<p class="meta">
-				The phone buzzes when a new card is added. Swap the card after the buzz. The newest is on top.
+				A card is added when it was read twice in a row; then the phone buzzes. Swap the card after
+				the buzz. The newest is on top.
 			</p>
 			<ol reversed>
 				{#each tally.toReversed() as entry, i (tally.length - i)}

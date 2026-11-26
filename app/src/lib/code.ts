@@ -35,6 +35,9 @@ export function parsePrintedCode(text: string): PrintedCode | null {
 	if (!m) return null;
 	const [, set, number, total = null] = m;
 	if (!knownSets.has(set)) return null;
+	// A plain three-digit number is always followed by "/total". Without it, the reader lost the
+	// end of the line and may have the digits wrong too ("RAD 128" seen for "RAD 129/167").
+	if (/^\d/.test(number) && total === null) return null;
 	const id = [set, number, total].filter(Boolean).join('-').toLowerCase();
 	return { set, number, total, id };
 }
