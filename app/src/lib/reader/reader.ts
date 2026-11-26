@@ -51,8 +51,9 @@ export interface ReadOptions {
 	/** Longest side of the shrunk picture used to find text. Smaller is faster. */
 	detSide?: number;
 	/**
-	 * A slanted rectangle does not say which way up the text is. Every line is read one way first.
+	 * A slanted rectangle does not say which way up the text is. Lines are read one way first.
 	 * If `accept` is given and likes none of them, they are read the other way up as well.
+	 * Reading stops at the first line `accept` likes.
 	 */
 	accept?: (text: string) => boolean;
 	/**
@@ -433,6 +434,8 @@ async function readOnce(pic: Picture, models: Models, options: ReadOptions): Pro
 			const out = await models.recognition(input.data, [1, 3, LINE_HEIGHT, input.width]);
 			const { text, confidence } = decodeLine(out, models.chars);
 			if (text) lines.push({ text, confidence, box });
+			// The code is all that is wanted; the remaining lines are not worth the time.
+			if (accept?.(text)) break;
 		}
 		return lines;
 	};

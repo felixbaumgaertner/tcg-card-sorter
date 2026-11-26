@@ -46,6 +46,43 @@
 	let light = $state(true);
 	let cameraInfo = $state('');
 
+	// Tally: every card read from the live camera, once. A new entry is added when the code
+	// differs from the entry before it, so holding the phone over one card adds it only once.
+	interface Entry {
+		code: string;
+		name: string;
+		ms: number;
+	}
+	const TALLY_KEY = 'ocr-test-tally';
+	let tally = $state<Entry[]>(JSON.parse(localStorage.getItem(TALLY_KEY) ?? '[]'));
+	let copied = $state(false);
+	const tallyText = $derived(tally.map((e, i) => `${i + 1}\t${e.code}\t${e.name}\t${e.ms} ms`).join('\n'));
+
+	function addToTally(r: Result) {
+		if (!r.code) return;
+		const code = `${r.code.set} ${r.code.number}${r.code.total ? `/${r.code.total}` : ''}`;
+		if (tally.at(-1)?.code === code) return;
+		tally = [...tally, { code, name: r.cardName ?? 'not in the card list', ms: r.ms }];
+		localStorage.setItem(TALLY_KEY, JSON.stringify(tally));
+		navigator.vibrate?.(80);
+	}
+
+	function removeLast() {
+		tally = tally.slice(0, -1);
+		localStorage.setItem(TALLY_KEY, JSON.stringify(tally));
+	}
+
+	function clearTally() {
+		tally = [];
+		localStorage.removeItem(TALLY_KEY);
+	}
+
+	async function copyTally() {
+		await navigator.clipboard.writeText(tallyText);
+		copied = true;
+		setTimeout(() => (copied = false), 2000);
+	}
+
 	async function getModels(): Promise<Models> {
 		if (models && modelsEngine === engine) return models;
 		models = null;
@@ -174,7 +211,10 @@
 			let n = 0;
 			while (live) {
 				const result = await read(m, video!, `Reading picture ${++n}`);
-				if (live) results = [result, ...results].slice(0, 30);
+				if (live) {
+					results = [result, ...results].slice(0, 5);
+					addToTally(result);
+				}
 				// Short break so the page stays usable between pictures.
 				await new Promise((done) => setTimeout(done, 200));
 			}
@@ -197,7 +237,7 @@
 	<h1>Reader test</h1>
 	<p>
 		Start the camera and hold the phone about 11 cm above one card. The card can lie any way round.
-		The page keeps reading the printed code by itself and shows how long each read took. Nothing
+		The page keeps reading the printed code by itself and adds every new card to a tally. Nothing
 		leaves this device.
 	</p>
 
@@ -252,6 +292,26 @@
 	{#if loadMs !== null}<p class="meta">Reader loaded in {loadMs} ms.</p>{/if}
 	{#if error}<p class="error">{error}</p>{/if}
 
+	{#if tally.length}
+		<section>
+			<h2>Tally: {tally.length} {tally.length === 1 ? 'card' : 'cards'}</h2>
+			<p class="meta">
+				The phone buzzes when a new card is added. Swap the card after the buzz. The newest is on top.
+			</p>
+			<ol reversed>
+				{#each tally.toReversed() as entry, i (tally.length - i)}
+					<li><strong>{entry.code}</strong> {entry.name} <span class="meta">{entry.ms} ms</span></li>
+				{/each}
+			</ol>
+			<div class="row">
+				<button onclick={copyTally}>{copied ? 'Copied' : 'Copy list'}</button>
+				<button onclick={removeLast}>Remove newest</button>
+				<button onclick={clearTally}>Clear</button>
+			</div>
+		</section>
+	{/if}
+
+	{#if results.length}<h2 class="sub">Latest reads</h2>{/if}
 	{#each results as r, i (results.length - i)}
 		<section>
 			<h2>
@@ -359,6 +419,23 @@
 		margin: 0;
 		font-size: 1.5rem;
 		font-variant-numeric: tabular-nums;
+	}
+	.sub {
+		margin-top: 2rem;
+		font-size: 1rem;
+		opacity: 0.7;
+	}
+	ol {
+		padding-left: 2rem;
+	}
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.row button {
+		font: inherit;
+		padding: 0.5rem 0.8rem;
 	}
 	section p {
 		margin: 0.2rem 0;
