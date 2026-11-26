@@ -118,7 +118,11 @@
 	</p>
 
 	<label class="pick" class:busy>
-		{busy ? 'Working…' : 'Take or pick photos'}
+		{busy ? 'Working…' : 'Take a photo'}
+		<input type="file" accept="image/*" capture="environment" onchange={onPick} disabled={busy} />
+	</label>
+	<label class="pick secondary" class:busy>
+		Pick photos from the gallery
 		<input type="file" accept="image/*" multiple onchange={onPick} disabled={busy} />
 	</label>
 
@@ -166,6 +170,12 @@
 		font-weight: 600;
 		text-align: center;
 		cursor: pointer;
+	}
+	.pick.secondary {
+		margin-top: 0.5rem;
+		background: none;
+		color: inherit;
+		border: 1px solid currentColor;
 	}
 	.pick.busy {
 		opacity: 0.6;
