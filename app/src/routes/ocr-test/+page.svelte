@@ -3,7 +3,8 @@
 	import { asset } from '$app/paths';
 	import { cardByPrint } from '../../lib/cards';
 	import type { PrintedCode } from '../../lib/code';
-	import { readCard } from '../../lib/reader/card';
+	import { corners, readCard } from '../../lib/reader/card';
+	import type { Box } from '../../lib/reader/reader';
 	import { parseDictionary, type Line, type Model, type Models } from '../../lib/reader/reader';
 
 	type Engine = 'wasm' | 'webgpu';
@@ -15,6 +16,7 @@
 		recMs: number;
 		zoomed: boolean;
 		turned: boolean;
+		codeBox: Box | null;
 		engine: Engine;
 		detSide: number;
 		width: number;
@@ -45,6 +47,13 @@
 	let hasLight = $state(false);
 	let light = $state(true);
 	let cameraInfo = $state('');
+	// What the last picture from the camera showed; drawn over the video.
+	let seen = $state<Result | null>(null);
+	let frame = $state({ width: 0, height: 0 });
+	const marker = $derived(seen?.codeBox ? corners(seen.codeBox).map((p) => p.join(',')).join(' ') : null);
+	const seenCode = $derived(
+		seen?.code ? `${seen.code.set} ${seen.code.number}${seen.code.total ? `/${seen.code.total}` : ''}` : null
+	);
 
 	// Tally: every card read from the live camera, once. A code is added when it was read twice in
 	// a row (a single read can come from a card that is still moving) and differs from the entry
@@ -161,6 +170,7 @@
 			recMs: found.recMs,
 			zoomed: found.zoomed,
 			turned: found.turned,
+			codeBox: found.codeBox,
 			engine,
 			detSide,
 			width,
@@ -207,6 +217,7 @@
 
 	function stopCamera() {
 		live = false;
+		seen = null;
 		stream?.getTracks().forEach((t) => t.stop());
 		stream = null;
 		if (video) video.srcObject = null;
@@ -228,13 +239,15 @@
 			video!.srcObject = stream;
 			await video!.play();
 			await setLight(light);
-			cameraInfo = `${video!.videoWidth}×${video!.videoHeight} px`;
+			frame = { width: video!.videoWidth, height: video!.videoHeight };
+			cameraInfo = `${frame.width}×${frame.height} px`;
 			live = true;
 			const m = await getModels();
 			let n = 0;
 			while (live) {
 				const result = await read(m, video!, `Reading picture ${++n}`);
 				if (live) {
+					seen = result;
 					results = [result, ...results].slice(0, 5);
 					addToTally(result);
 				}
@@ -259,8 +272,8 @@
 <main>
 	<h1>Reader test</h1>
 	<p>
-		Start the camera and hold the phone about 11 cm above one card, with the card in the middle of
-		the picture. The card can lie any way round.
+		Start the camera and hold the phone about 11 cm above one card, with the card under the white
+		cross. The card can lie any way round. What the page reads is shown on the picture.
 		The page keeps reading the printed code by itself and adds every new card to a tally. Nothing
 		leaves this device.
 	</p>
@@ -292,7 +305,39 @@
 		</button>
 	{/if}
 	<!-- svelte-ignore a11y_media_has_caption -->
-	<video bind:this={video} playsinline muted class:hidden={!live} class:flash></video>
+	<div
+		class="camera"
+		class:hidden={!live}
+		class:flash
+		style:--ratio={frame.height ? frame.width / frame.height : 0.75}
+	>
+		<div class="stage">
+			<video bind:this={video} playsinline muted></video>
+			{#if live}
+				<svg viewBox="0 0 {frame.width} {frame.height}" aria-hidden="true">
+				<!-- Aim: the card that covers this cross is the one that is read. -->
+				<path
+					class="aim"
+					d="M {frame.width / 2 - 40} {frame.height / 2} h 80 M {frame.width / 2} {frame.height / 2 - 40} v 80"
+				/>
+				{#if marker}<polygon class="marker" points={marker} />{/if}
+				</svg>
+			{/if}
+		</div>
+		{#if live}
+			<div class="seen" class:found={seenCode !== null} role="status">
+				{#if seenCode}
+					<strong>{seenCode}</strong>
+					<span>{seen?.cardName ?? 'not in the card list'}</span>
+				{:else if seen}
+					<span>No code found</span>
+				{:else}
+					<span>Looking…</span>
+				{/if}
+				<span class="count">{tally.length} counted{seen ? ` · ${seen.ms} ms` : ''}</span>
+			</div>
+		{/if}
+	</div>
 	{#if live}
 		<p class="meta">
 			Camera {cameraInfo}
@@ -382,18 +427,67 @@
 		font: inherit;
 		padding: 0.3rem;
 	}
+	.camera {
+		position: relative;
+		margin-top: 0.5rem;
+		border-radius: 0.5rem;
+		overflow: hidden;
+		background: #000;
+	}
+	.camera.hidden {
+		display: none;
+	}
+	.camera.flash {
+		outline: 6px solid #2da44e;
+	}
+	.stage {
+		position: relative;
+		/* Keep the result line below the picture on screen. */
+		max-width: calc(62vh * var(--ratio, 0.75));
+		margin: 0 auto;
+	}
 	video {
 		display: block;
 		width: 100%;
-		margin-top: 0.5rem;
-		border-radius: 0.5rem;
-		background: #000;
 	}
-	video.flash {
-		outline: 6px solid #2da44e;
+	svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 	}
-	video.hidden {
-		display: none;
+	.aim {
+		fill: none;
+		stroke: #fff;
+		stroke-width: 4;
+		opacity: 0.7;
+	}
+	.marker {
+		fill: rgb(45 164 78 / 0.25);
+		stroke: #3fb950;
+		stroke-width: 6;
+		stroke-linejoin: round;
+	}
+	.seen {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.2rem 0.6rem;
+		padding: 0.5rem 0.75rem;
+		background: #24292f;
+		color: #fff;
+		font-variant-numeric: tabular-nums;
+	}
+	.seen.found {
+		background: #1a7f37;
+	}
+	.seen strong {
+		font-size: 1.4rem;
+	}
+	.seen .count {
+		margin-left: auto;
+		font-size: 0.85rem;
+		opacity: 0.85;
 	}
 	.pick {
 		display: block;

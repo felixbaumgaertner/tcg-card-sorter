@@ -39,6 +39,8 @@ export function offCentre(box: Box, flip: boolean, width: number, height: number
 
 export interface CardRead {
 	code: PrintedCode | null;
+	/** Where the code line is, in pixels of the picture that was handed in. */
+	codeBox: Box | null;
 	lines: Line[];
 	/** How the code was found: at once, in an enlarged second look, and/or after a quarter turn. */
 	zoomed: boolean;
@@ -48,6 +50,20 @@ export interface CardRead {
 }
 
 const isCode = (text: string) => parsePrintedCode(text) !== null;
+
+/** The code among the lines read, with its box. */
+function pickCode(lines: Line[]): { code: PrintedCode | null; codeBox: Box | null } {
+	for (const line of lines) {
+		const code = parsePrintedCode(line.text);
+		if (code) return { code, codeBox: line.box };
+	}
+	return { code: null, codeBox: null };
+}
+
+/** A box found in a picture that had been turned a quarter clockwise, back in the unturned picture. */
+function unturn(box: Box, originalHeight: number): Box {
+	return { ...box, cx: box.cy, cy: originalHeight - box.cx, angle: box.angle - Math.PI / 2 };
+}
 // The artist and copyright line ("Kudos Productions • ©2025 RGI") shares the bottom edge with the
 // code and is printed on a dark strip, so it is found even when the code is not.
 const ARTIST_LINE = /20\d\d\s?R/;
@@ -84,10 +100,22 @@ async function secondLook(pic: Picture, lines: Line[], models: Models): Promise<
 		const found = await readPicture(strip, models, { detSide: 4096, accept: isCode, retryTurned: false });
 		detMs += found.detMs;
 		recMs += found.recMs;
-		const code = found.lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
-		if (code) return { code, lines: found.lines, zoomed: true, turned: false, detMs, recMs };
+		const { code, codeBox } = pickCode(found.lines);
+		if (code && codeBox) {
+			// Back from the enlarged strip to the picture (zoomCrop starts at whole, non-negative pixels).
+			const x0 = Math.max(0, Math.floor(left));
+			const y0 = Math.max(0, Math.floor(top));
+			const inPicture: Box = {
+				...codeBox,
+				cx: x0 + codeBox.cx / scale,
+				cy: y0 + codeBox.cy / scale,
+				w: codeBox.w / scale,
+				h: codeBox.h / scale
+			};
+			return { code, codeBox: inPicture, lines: found.lines, zoomed: true, turned: false, detMs, recMs };
+		}
 	}
-	return detMs ? { code: null, lines: [], zoomed: true, turned: false, detMs, recMs } : null;
+	return detMs ? { code: null, codeBox: null, lines: [], zoomed: true, turned: false, detMs, recMs } : null;
 }
 
 /**
@@ -106,15 +134,30 @@ export async function readCard(pic: Picture, models: Models, options: { detSide?
 		detMs += found.detMs;
 		recMs += found.recMs;
 		if (!turned) firstLines = found.lines;
-		const code = found.lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
-		if (code) return { code, lines: found.lines, zoomed: false, turned, detMs, recMs };
+		const back = (box: Box | null) => (box && turned ? unturn(box, pic.height) : box);
+		const { code, codeBox } = pickCode(found.lines);
+		if (code) return { code, codeBox: back(codeBox), lines: found.lines, zoomed: false, turned, detMs, recMs };
 
 		const second = await secondLook(view, found.lines, models);
 		if (second) {
 			detMs += second.detMs;
 			recMs += second.recMs;
-			if (second.code) return { ...second, turned, detMs, recMs };
+			if (second.code) return { ...second, codeBox: back(second.codeBox), turned, detMs, recMs };
 		}
 	}
-	return { code: null, lines: firstLines, zoomed: false, turned: false, detMs, recMs };
+	return { code: null, codeBox: null, lines: firstLines, zoomed: false, turned: false, detMs, recMs };
+}
+
+/** The four corners of a box, for drawing it. */
+export function corners(box: Box): [number, number][] {
+	const ux = (Math.cos(box.angle) * box.w) / 2;
+	const uy = (Math.sin(box.angle) * box.w) / 2;
+	const vx = (-Math.sin(box.angle) * box.h) / 2;
+	const vy = (Math.cos(box.angle) * box.h) / 2;
+	return [
+		[box.cx - ux - vx, box.cy - uy - vy],
+		[box.cx + ux - vx, box.cy + uy - vy],
+		[box.cx + ux + vx, box.cy + uy + vy],
+		[box.cx - ux + vx, box.cy - uy + vy]
+	];
 }

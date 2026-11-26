@@ -70,6 +70,7 @@ describe.skipIf(!existsSync(photos))('test photos', () => {
 			const models = await loadModels();
 			const wrong: string[] = [];
 			const report: string[] = [];
+			const spots: Record<string, number[]> = {};
 			for (const [file, id] of Object.entries({ ...expected, ...hard })) {
 				for (const turns of process.env.ALL_TURNS ? [0, 1, 2, 3] : [0]) {
 					const result = await readCard(await loadPicture(file, turns, width), models);
@@ -78,6 +79,21 @@ describe.skipIf(!existsSync(photos))('test photos', () => {
 						`${file.slice(13, 19)} turn ${turns}: ${got ?? 'none'} (find ${result.detMs} ms, read ${result.recMs} ms${result.zoomed ? ', zoomed' : ''}${result.turned ? ', turned' : ''})`
 					);
 					if (got !== id && file in expected) wrong.push(`${file} turn ${turns}: got ${got}, want ${id}`);
+					// The marker must sit on the same spot of the card however the photo is turned.
+					if (result.codeBox && file in expected) {
+						const { cx, cy } = result.codeBox;
+						const { width: w, height: h } = await loadPicture(file, turns, width);
+						// Undo the test's own turn to get the spot in the upright photo, as a share of its size.
+						const spot = [
+							[cx / w, cy / h],
+							[cy / h, 1 - cx / w],
+							[1 - cx / w, 1 - cy / h],
+							[1 - cy / h, cx / w]
+						][turns];
+						spots[file] ??= spot;
+						const off = Math.hypot(spot[0] - spots[file][0], spot[1] - spots[file][1]);
+						if (off > 0.03) wrong.push(`${file} turn ${turns}: marker off by ${off.toFixed(3)}`);
+					}
 				}
 			}
 			if (process.env.REPORT) console.log(report.join('\n'));
