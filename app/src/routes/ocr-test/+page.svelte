@@ -46,33 +46,51 @@
 		return reader;
 	}
 
+	// Longest side of the picture handed to the reader. The full 12-megapixel photo is too heavy
+	// for a phone. In Chromium, 2016 px read 10 of the 11 test photos (all but the one without
+	// flash) and 1600 px read 9.
+	const MAX_SIDE = 2016;
+
 	/**
-	 * Draws the whole photo onto a canvas, turned by `turns` quarter turns, and returns it as an
-	 * image address.
+	 * Draws the photo onto a canvas, shrunk to MAX_SIDE and turned by `turns` quarter turns, and
+	 * returns it as a temporary image address.
 	 */
 	async function prepare(file: File, turns: number) {
 		const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+		const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+		const w = Math.round(bitmap.width * scale);
+		const h = Math.round(bitmap.height * scale);
 		const sideways = turns % 2 === 1;
-		const width = sideways ? bitmap.height : bitmap.width;
-		const height = sideways ? bitmap.width : bitmap.height;
 		const canvas = document.createElement('canvas');
-		canvas.width = width;
-		canvas.height = height;
+		canvas.width = sideways ? h : w;
+		canvas.height = sideways ? w : h;
 		const ctx = canvas.getContext('2d')!;
-		ctx.translate(width / 2, height / 2);
+		ctx.imageSmoothingQuality = 'high';
+		ctx.translate(canvas.width / 2, canvas.height / 2);
 		ctx.rotate((turns * Math.PI) / 2);
-		ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2);
+		ctx.drawImage(bitmap, -w / 2, -h / 2, w, h);
 		bitmap.close();
-		return { url: canvas.toDataURL('image/png'), width, height };
+		const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, 'image/jpeg', 0.92));
+		if (!blob) throw new Error('Could not prepare the photo.');
+		return { url: URL.createObjectURL(blob), width: canvas.width, height: canvas.height };
 	}
 
 	/** A card can lie any way round, so the photo is read as taken first and then turned. */
-	async function read(r: Reader, file: File): Promise<Result> {
+	async function read(r: Reader, file: File, label: string): Promise<Result> {
 		const t0 = performance.now();
 		let first: Omit<Result, 'ms'> | null = null;
-		for (const turns of [0, 1, 3, 2]) {
+		const order = [0, 1, 3, 2];
+		for (const [n, turns] of order.entries()) {
+			status = `${label}, try ${n + 1} of ${order.length}…`;
 			const { url, width, height } = await prepare(file, turns);
-			const out = await r.detect(url);
+			// Let the browser paint the status line before the reader blocks the page.
+			await new Promise((done) => setTimeout(done, 30));
+			let out;
+			try {
+				out = await r.detect(url);
+			} finally {
+				URL.revokeObjectURL(url);
+			}
 			const lines = Array.isArray(out) ? out : out.texts;
 			const code = lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
 			const cardName = code ? (cardById(code.id)?.name ?? null) : null;
@@ -92,8 +110,7 @@
 		try {
 			const r = await getReader();
 			for (const [i, file] of files.entries()) {
-				status = `Reading photo ${i + 1} of ${files.length}…`;
-				results = [await read(r, file), ...results];
+				results = [await read(r, file, `Reading photo ${i + 1} of ${files.length}`), ...results];
 			}
 			status = 'Done. Pick another photo to read more.';
 		} catch (e) {

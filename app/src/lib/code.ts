@@ -13,7 +13,10 @@ export interface PrintedCode {
 	id: string;
 }
 
-const CODE = /^([A-Z]{2,3})[^A-Za-z0-9]{0,3}([A-Z]{0,2}\d{1,3}[a-z]?\*?)(?:\/(\d{3}))?(?![0-9])/;
+// The number is always three digits ("088a", "229*") or letters plus digits ("R05a", "SP3", "T03").
+// A shorter number means the reader lost part of the line, so it is rejected.
+const CODE =
+	/^([A-Z]{2,3})[^A-Za-z0-9]{0,3}(\d{3}[a-z]?\*?|[A-Z]{1,2}\d{1,2}[a-z]?)(?:\/(\d{3}))?(?![0-9])/;
 
 export function parsePrintedCode(text: string): PrintedCode | null {
 	const m = text.trim().match(CODE);
