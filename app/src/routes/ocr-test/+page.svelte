@@ -3,21 +3,20 @@
 	import { asset } from '$app/paths';
 	import { cardById } from '../../lib/cards';
 	import { parsePrintedCode, type PrintedCode } from '../../lib/code';
+	import { parseDictionary, readPicture, type Line, type Model, type Models } from '../../lib/reader/reader';
 
-	interface Line {
-		text: string;
-		mean: number;
-	}
-	interface Reader {
-		detect(url: string): Promise<{ texts: Line[] } | Line[]>;
-	}
+	type Engine = 'wasm' | 'webgpu';
+
 	interface Result {
-		/** Quarter turns needed before a code was found (0 = upright). */
-		turns: number;
 		ms: number;
+		/** Time to find the text and time to read it, in ms. */
+		detMs: number;
+		recMs: number;
+		boxes: number;
+		flipped: boolean;
+		turned: boolean;
 		engine: Engine;
-		/** Time of each try in ms, in the order tried. */
-		tries: number[];
+		detSide: number;
 		width: number;
 		height: number;
 		lines: Line[];
@@ -25,13 +24,14 @@
 		cardName: string | null;
 	}
 
-	type Engine = 'wasm' | 'webgpu';
-	let reader: Reader | null = null;
-	let readerEngine: Engine | null = null;
-	// On a Pixel 7a one try took 50 s with WASM and 5 s with WebGPU (1280 px), so WebGPU is the
-	// default wherever the browser has it.
+	let models: Models | null = null;
+	let modelsEngine: Engine | null = null;
+	// On a Pixel 7a the processor (WASM) was about ten times slower than the graphics chip
+	// (WebGPU), so WebGPU is the default wherever the browser has it.
 	let engine = $state<Engine>('gpu' in navigator ? 'webgpu' : 'wasm');
-	let maxSide = $state(2016);
+	// Longest side of the shrunk picture in which text is searched. At 1440 px all test photos
+	// were read in every direction; at 1280 px one tilted full-art card was missed.
+	let detSide = $state(1440);
 	let status = $state('Not loaded yet. Start the camera or pick a photo.');
 	let loadMs = $state<number | null>(null);
 	let busy = $state(false);
@@ -46,76 +46,71 @@
 	let light = $state(true);
 	let cameraInfo = $state('');
 
-	async function getReader(): Promise<Reader> {
-		if (reader && readerEngine === engine) return reader;
-		reader = null;
+	async function getModels(): Promise<Models> {
+		if (models && modelsEngine === engine) return models;
+		models = null;
 		status = 'Loading the text reader (about 16 MB, first time only)…';
 		const t0 = performance.now();
-		// Folder that holds the reader's files (filled by scripts/copy-ocr-assets.mjs).
+		// Folder that holds the model files (filled by scripts/copy-ocr-assets.mjs).
 		const dir = new URL('.', new URL(asset('ocr/ppocr_keys_v1.txt'), location.href)).href;
-		const { default: Ocr } = await import('@gutenye/ocr-browser');
-		reader = (await Ocr.create({
-			onnxOptions: { executionProviders: [engine] },
-			models: {
-				detectionPath: `${dir}ch_PP-OCRv4_det_infer.onnx`,
-				recognitionPath: `${dir}ch_PP-OCRv4_rec_infer.onnx`,
-				dictionaryPath: `${dir}ppocr_keys_v1.txt`
-			}
-		})) as Reader;
-		readerEngine = engine;
+		const ort = await import('onnxruntime-web');
+		const load = async (file: string): Promise<Model> => {
+			const session = await ort.InferenceSession.create(dir + file, { executionProviders: [engine] });
+			return async (input, dims) => {
+				const tensor = new ort.Tensor('float32', input, dims);
+				const out = await session.run({ [session.inputNames[0]]: tensor });
+				tensor.dispose();
+				const result = out[session.outputNames[0]];
+				const data = (await result.getData()) as Float32Array;
+				const answer = { data, dims: result.dims };
+				result.dispose();
+				return answer;
+			};
+		};
+		const dictionary = await (await fetch(`${dir}ppocr_keys_v1.txt`)).text();
+		models = {
+			detection: await load('ch_PP-OCRv4_det_infer.onnx'),
+			recognition: await load('ch_PP-OCRv4_rec_infer.onnx'),
+			chars: parseDictionary(dictionary)
+		};
+		modelsEngine = engine;
 		loadMs = Math.round(performance.now() - t0);
-		return reader;
+		return models;
 	}
 
-	/**
-	 * Draws the photo onto a canvas, shrunk to `maxSide` and turned by `turns` quarter turns, and
-	 * returns it as a temporary image address.
-	 */
-	async function prepare(bitmap: ImageBitmap, turns: number) {
-		const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
-		const w = Math.round(bitmap.width * scale);
-		const h = Math.round(bitmap.height * scale);
-		const sideways = turns % 2 === 1;
-		const canvas = document.createElement('canvas');
-		canvas.width = sideways ? h : w;
-		canvas.height = sideways ? w : h;
-		const ctx = canvas.getContext('2d')!;
-		ctx.imageSmoothingQuality = 'high';
-		ctx.translate(canvas.width / 2, canvas.height / 2);
-		ctx.rotate((turns * Math.PI) / 2);
-		ctx.drawImage(bitmap, -w / 2, -h / 2, w, h);
-		const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, 'image/jpeg', 0.92));
-		if (!blob) throw new Error('Could not prepare the photo.');
-		return { url: URL.createObjectURL(blob), width: canvas.width, height: canvas.height };
-	}
+	const scratch = document.createElement('canvas');
+	const accept = (text: string) => parsePrintedCode(text) !== null;
 
-	/** A card can lie any way round, so the photo is read as taken first and then turned. */
-	async function read(r: Reader, picture: ImageBitmap, label: string): Promise<Result> {
+	/** Reads one picture (a photo or a still from the video) and returns what was found. */
+	async function read(m: Models, source: ImageBitmap | HTMLVideoElement, label: string): Promise<Result> {
+		status = `${label}…`;
+		// Let the browser paint the status line before the reader blocks the page.
+		await new Promise((done) => setTimeout(done, 30));
 		const t0 = performance.now();
-		let first: Omit<Result, 'ms' | 'tries'> | null = null;
-		const tries: number[] = [];
-		const order = [0, 1, 3, 2];
-		for (const [n, turns] of order.entries()) {
-			status = `${label}, try ${n + 1} of ${order.length}…`;
-			const { url, width, height } = await prepare(picture, turns);
-			// Let the browser paint the status line before the reader blocks the page.
-			await new Promise((done) => setTimeout(done, 30));
-			const tTry = performance.now();
-			let out;
-			try {
-				out = await r.detect(url);
-			} finally {
-				URL.revokeObjectURL(url);
-			}
-			tries.push(Math.round(performance.now() - tTry));
-			const lines = Array.isArray(out) ? out : out.texts;
-			const code = lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
-			const cardName = code ? (cardById(code.id)?.name ?? null) : null;
-			const attempt = { turns, width, height, lines, code, cardName, engine };
-			if (code) return { ...attempt, tries, ms: Math.round(performance.now() - t0) };
-			first ??= attempt;
-		}
-		return { ...first!, tries, ms: Math.round(performance.now() - t0) };
+		const width = 'videoWidth' in source ? source.videoWidth : source.width;
+		const height = 'videoHeight' in source ? source.videoHeight : source.height;
+		scratch.width = width;
+		scratch.height = height;
+		const ctx = scratch.getContext('2d', { willReadFrequently: true })!;
+		ctx.drawImage(source, 0, 0);
+		const pixels = ctx.getImageData(0, 0, width, height);
+		const found = await readPicture(pixels, m, { detSide, accept });
+		const code = found.lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
+		return {
+			ms: Math.round(performance.now() - t0),
+			detMs: found.detMs,
+			recMs: found.recMs,
+			boxes: found.boxes,
+			flipped: found.flipped,
+			turned: found.turned,
+			engine,
+			detSide,
+			width,
+			height,
+			lines: found.lines,
+			code,
+			cardName: code ? (cardById(code.id)?.name ?? null) : null
+		};
 	}
 
 	async function onPick(event: Event) {
@@ -125,12 +120,12 @@
 		busy = true;
 		error = null;
 		try {
-			const r = await getReader();
+			const m = await getModels();
 			for (const [i, file] of files.entries()) {
 				const picture = await createImageBitmap(file, { imageOrientation: 'from-image' });
 				try {
 					const label = `Reading photo ${i + 1} of ${files.length}`;
-					results = [await read(r, picture, label), ...results];
+					results = [await read(m, picture, label), ...results];
 				} finally {
 					picture.close();
 				}
@@ -175,16 +170,11 @@
 			await setLight(light);
 			cameraInfo = `${video!.videoWidth}×${video!.videoHeight} px`;
 			live = true;
-			const r = await getReader();
+			const m = await getModels();
 			let n = 0;
 			while (live) {
-				const picture = await createImageBitmap(video!);
-				try {
-					const result = await read(r, picture, `Reading picture ${++n}`);
-					if (live) results = [result, ...results].slice(0, 30);
-				} finally {
-					picture.close();
-				}
+				const result = await read(m, video!, `Reading picture ${++n}`);
+				if (live) results = [result, ...results].slice(0, 30);
 				// Short break so the page stays usable between pictures.
 				await new Promise((done) => setTimeout(done, 200));
 			}
@@ -220,11 +210,11 @@
 			</select>
 		</label>
 		<label>
-			Photo size
-			<select bind:value={maxSide} disabled={busy}>
-				<option value={2016}>2016 px</option>
-				<option value={1600}>1600 px</option>
+			Search size
+			<select bind:value={detSide} disabled={busy}>
+				<option value={1440}>1440 px</option>
 				<option value={1280}>1280 px</option>
+				<option value={1120}>1120 px</option>
 				<option value={960}>960 px</option>
 			</select>
 		</label>
@@ -271,14 +261,16 @@
 				{#if r.cardName}{r.cardName}{:else if r.code}Not in the card list{/if}
 			</p>
 			<p class="meta">
-				{r.ms} ms · {r.width}×{r.height} px{r.turns ? ` · found after turning the photo` : ''}
-				· tries: {r.tries.join(' + ')} ms · {r.engine}
+				{r.ms} ms (find {r.detMs} + read {r.recMs}) · {r.width}×{r.height} px · {r.boxes} lines ·
+				{r.engine} · search {r.detSide} px{r.flipped ? ' · upside down' : ''}{r.turned
+					? ' · second search, turned'
+					: ''}
 			</p>
 			<details>
 				<summary>All text found ({r.lines.length} lines)</summary>
 				<ul>
 					{#each r.lines as line, j (j)}
-						<li>{line.text} <span class="meta">({line.mean.toFixed(2)})</span></li>
+						<li>{line.text} <span class="meta">({line.confidence.toFixed(2)})</span></li>
 					{/each}
 				</ul>
 			</details>

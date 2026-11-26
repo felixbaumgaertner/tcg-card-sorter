@@ -2,6 +2,8 @@
 // Printed forms: "SFD • 001/221", "VEN • 088a/166 • EN", "UNL • R05a", "RAD • SP3/005 • EN".
 // Readers often drop the dot or the spaces ("RADSP3/005·EN"), so separators are optional.
 
+import { sets } from './cards';
+
 export interface PrintedCode {
 	/** Set code as printed, e.g. "VEN". */
 	set: string;
@@ -18,6 +20,13 @@ export interface PrintedCode {
 const CODE =
 	/^([A-Z]{2,3})[^A-Za-z0-9]{0,3}(\d{3}[a-z]?\*?|[A-Z]{1,2}\d{1,2}[a-z]?)(?:\/(\d{3}))?(?![0-9])/;
 
+/**
+ * Set codes that can be printed on a card. Text read upside down sometimes looks like a code
+ * ("ZIN SS7"), so anything with another set code is thrown away.
+ * RAD (Radiance) is not in the card list yet.
+ */
+export const knownSets: ReadonlySet<string> = new Set([...sets.map((s) => s.id), 'RAD']);
+
 export function parsePrintedCode(text: string): PrintedCode | null {
 	// The slash is sometimes read as a 7 ("0257298" for "025/298"). Seven digits in a row can only
 	// be that, because no number has more than three.
@@ -25,6 +34,7 @@ export function parsePrintedCode(text: string): PrintedCode | null {
 	const m = fixed.match(CODE);
 	if (!m) return null;
 	const [, set, number, total = null] = m;
+	if (!knownSets.has(set)) return null;
 	const id = [set, number, total].filter(Boolean).join('-').toLowerCase();
 	return { set, number, total, id };
 }

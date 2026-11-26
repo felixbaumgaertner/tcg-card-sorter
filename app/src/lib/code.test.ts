@@ -19,7 +19,7 @@ describe('parsePrintedCode', () => {
 		expect(parsePrintedCode(text)?.id).toBe(id);
 	});
 
-	it.each(['Kudos Productions ·@2025RGI', 'DEFLECT2', 'We are what we overcome.', '', 'ASSAULT 2', 'OGN 04', 'OGN·0'])(
+	it.each(['Kudos Productions ·@2025RGI', 'DEFLECT2', 'We are what we overcome.', '', 'ASSAULT 2', 'OGN 04', 'OGN·0', 'ZIN SS7', 'GN·040/298'])(
 		'ignores "%s"',
 		(text) => {
 			expect(parsePrintedCode(text)).toBeNull();
