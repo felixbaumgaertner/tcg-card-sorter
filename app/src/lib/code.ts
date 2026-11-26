@@ -27,9 +27,9 @@ const CODE =
 export const knownSets: ReadonlySet<string> = new Set(sets.map((s) => s.id));
 
 export function parsePrintedCode(text: string): PrintedCode | null {
-	// The slash is sometimes read as a 7 ("0257298" for "025/298"). Seven digits in a row can only
-	// be that, because no number has more than three.
-	const fixed = text.trim().replace(/^([A-Z]{2,3}[^A-Za-z0-9]{0,3}\d{3})7(\d{3})(?![0-9])/, '$1/$2');
+	// The slash is sometimes read as a 7 or a 1 ("0257298" for "025/298"). Seven digits in a row can
+	// only be that, because no number has more than three.
+	const fixed = text.trim().replace(/^([A-Z]{2,3}[^A-Za-z0-9]{0,3}\d{3})[17](\d{3})(?![0-9])/, '$1/$2');
 	const m = fixed.match(CODE);
 	if (!m) return null;
 	const [, set, number, total = null] = m;

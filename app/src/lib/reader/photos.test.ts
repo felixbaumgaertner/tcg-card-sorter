@@ -3,9 +3,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { parsePrintedCode } from '../code';
-import { offCentre } from './card';
-import { parseDictionary, readPicture, type Model, type Models, type Picture } from './reader';
+import { readCard } from './card';
+import { parseDictionary, type Model, type Models, type Picture } from './reader';
 
 const photos = join(__dirname, '../../../../test-photos/2026-11-26');
 const modelDir = join(__dirname, '../../../node_modules/@gutenye/ocr-models/assets');
@@ -21,7 +20,9 @@ const expected: Record<string, string> = {
 	'IMG_20261126_130416_472.jpg': 'unl-r05a',
 	'IMG_20261126_130440_892.jpg': 'ogn-040-298',
 	'IMG_20261126_130546_776.jpg': 'ogs-007-024',
-	'IMG_20261126_130630_521.jpg': 'ogn-310-298'
+	'IMG_20261126_130630_521.jpg': 'ogn-310-298',
+	// Legend in a sleeve: faint white code on bright artwork, glare on the name.
+	'IMG_20261126_162802_168.jpg': 'ogn-259-298'
 };
 // Taken without flash on purpose; blurry. Reported, not required.
 const hard: Record<string, string> = { 'IMG_20261126_130456_606.jpg': 'ogn-040-298' };
@@ -43,10 +44,15 @@ async function loadModels(): Promise<Models> {
 	};
 }
 
-async function loadPicture(file: string, turns = 0): Promise<Picture> {
+/** `width`: shrink the photo to this width first, to imitate the phone's video (1440 px). */
+async function loadPicture(file: string, turns = 0, width?: number): Promise<Picture> {
 	const sharp = (await import('sharp')).default;
-	const { data, info } = await sharp(join(photos, file))
+	const upright = await sharp(join(photos, file))
 		.rotate() // apply the camera's "which way is up" note
+		.resize(width ?? null)
+		.png()
+		.toBuffer();
+	const { data, info } = await sharp(upright)
 		.rotate(turns * 90)
 		.ensureAlpha()
 		.raw()
@@ -54,21 +60,22 @@ async function loadPicture(file: string, turns = 0): Promise<Picture> {
 	return { data: new Uint8Array(data), width: info.width, height: info.height };
 }
 
-const accept = (text: string) => parsePrintedCode(text) !== null;
-const sides = (process.env.DET_SIDES ?? '1440').split(',').map(Number);
+
+// Photo width in px. The photos are 3024 wide; the phone's live video is 1440.
+const widths = (process.env.WIDTHS ?? '3024,1440').split(',').map(Number);
 
 describe.skipIf(!existsSync(photos))('test photos', () => {
-	for (const side of sides) {
-		it(`reads every printed code (text search at ${side} px)`, { timeout: 300_000 }, async () => {
+	for (const width of widths) {
+		it(`reads every printed code at ${width} px wide`, { timeout: 600_000 }, async () => {
 			const models = await loadModels();
 			const wrong: string[] = [];
 			const report: string[] = [];
 			for (const [file, id] of Object.entries({ ...expected, ...hard })) {
 				for (const turns of process.env.ALL_TURNS ? [0, 1, 2, 3] : [0]) {
-					const result = await readPicture(await loadPicture(file, turns), models, { detSide: side, accept, rank: offCentre });
-					const got = result.lines.map((l) => parsePrintedCode(l.text)).find((c) => c)?.id ?? null;
+					const result = await readCard(await loadPicture(file, turns, width), models);
+					const got = result.code?.id ?? null;
 					report.push(
-						`${file.slice(13, 19)} turn ${turns}: ${got ?? 'none'} (${result.boxes} boxes, find ${result.detMs} ms, read ${result.recMs} ms${result.flipped ? ', flipped' : ''}${result.turned ? ', turned' : ''})`
+						`${file.slice(13, 19)} turn ${turns}: ${got ?? 'none'} (find ${result.detMs} ms, read ${result.recMs} ms${result.zoomed ? ', zoomed' : ''}${result.turned ? ', turned' : ''})`
 					);
 					if (got !== id && file in expected) wrong.push(`${file} turn ${turns}: got ${got}, want ${id}`);
 				}

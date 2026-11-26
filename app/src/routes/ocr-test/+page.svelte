@@ -2,9 +2,9 @@
 	import { onDestroy } from 'svelte';
 	import { asset } from '$app/paths';
 	import { cardByPrint } from '../../lib/cards';
-	import { parsePrintedCode, type PrintedCode } from '../../lib/code';
-	import { offCentre } from '../../lib/reader/card';
-	import { parseDictionary, readPicture, type Line, type Model, type Models } from '../../lib/reader/reader';
+	import type { PrintedCode } from '../../lib/code';
+	import { readCard } from '../../lib/reader/card';
+	import { parseDictionary, type Line, type Model, type Models } from '../../lib/reader/reader';
 
 	type Engine = 'wasm' | 'webgpu';
 
@@ -13,8 +13,7 @@
 		/** Time to find the text and time to read it, in ms. */
 		detMs: number;
 		recMs: number;
-		boxes: number;
-		flipped: boolean;
+		zoomed: boolean;
 		turned: boolean;
 		engine: Engine;
 		detSide: number;
@@ -140,7 +139,6 @@
 	}
 
 	const scratch = document.createElement('canvas');
-	const accept = (text: string) => parsePrintedCode(text) !== null;
 
 	/** Reads one picture (a photo or a still from the video) and returns what was found. */
 	async function read(m: Models, source: ImageBitmap | HTMLVideoElement, label: string): Promise<Result> {
@@ -155,14 +153,13 @@
 		const ctx = scratch.getContext('2d', { willReadFrequently: true })!;
 		ctx.drawImage(source, 0, 0);
 		const pixels = ctx.getImageData(0, 0, width, height);
-		const found = await readPicture(pixels, m, { detSide, accept, rank: offCentre });
-		const code = found.lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
+		const found = await readCard(pixels, m, { detSide });
+		const code = found.code;
 		return {
 			ms: Math.round(performance.now() - t0),
 			detMs: found.detMs,
 			recMs: found.recMs,
-			boxes: found.boxes,
-			flipped: found.flipped,
+			zoomed: found.zoomed,
 			turned: found.turned,
 			engine,
 			detSide,
@@ -349,13 +346,13 @@
 				{#if r.cardName}{r.cardName}{:else if r.code}Not in the card list{/if}
 			</p>
 			<p class="meta">
-				{r.ms} ms (find {r.detMs} + read {r.recMs}) · {r.width}×{r.height} px · {r.boxes} lines ·
-				{r.engine} · search {r.detSide} px{r.flipped ? ' · upside down' : ''}{r.turned
-					? ' · second search, turned'
+				{r.ms} ms (find {r.detMs} + read {r.recMs}) · {r.width}×{r.height} px · {r.engine} · search
+				{r.detSide} px{r.zoomed ? ' · found in the enlarged second look' : ''}{r.turned
+					? ' · found after a quarter turn'
 					: ''}
 			</p>
 			<details>
-				<summary>All text found ({r.lines.length} lines)</summary>
+				<summary>Text read ({r.lines.length} lines)</summary>
 				<ul>
 					{#each r.lines as line, j (j)}
 						<li>{line.text} <span class="meta">({line.confidence.toFixed(2)})</span></li>

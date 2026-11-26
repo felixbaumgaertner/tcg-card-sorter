@@ -45,6 +45,8 @@ export interface Line {
 	/** Average certainty of the characters, 0 to 1. */
 	confidence: number;
 	box: Box;
+	/** True if the box was read the other way up to get this text. */
+	flip: boolean;
 }
 
 export interface ReadOptions {
@@ -388,6 +390,46 @@ export interface Models {
 	chars: string[];
 }
 
+/**
+ * A part of the picture, enlarged. Faint small text that the detection model misses is often
+ * found once it is bigger.
+ */
+export function zoomCrop(pic: Picture, left: number, top: number, width: number, height: number, scale: number): Picture {
+	const x0 = Math.max(0, Math.floor(left));
+	const y0 = Math.max(0, Math.floor(top));
+	const w = Math.min(pic.width, Math.ceil(left + width)) - x0;
+	const h = Math.min(pic.height, Math.ceil(top + height)) - y0;
+	if (w <= 1 || h <= 1) return { data: new Uint8Array(4), width: 1, height: 1 };
+	const W = Math.max(1, Math.round(w * scale));
+	const H = Math.max(1, Math.round(h * scale));
+	const out = new Uint8Array(W * H * 4);
+	const src = pic.data;
+	for (let y = 0; y < H; y++) {
+		const sy = Math.min(h - 1, Math.max(0, (y + 0.5) / scale - 0.5));
+		const ya = Math.floor(sy);
+		const yb = Math.min(h - 1, ya + 1);
+		const fy = sy - ya;
+		for (let x = 0; x < W; x++) {
+			const sx = Math.min(w - 1, Math.max(0, (x + 0.5) / scale - 0.5));
+			const xa = Math.floor(sx);
+			const xb = Math.min(w - 1, xa + 1);
+			const fx = sx - xa;
+			const a = ((y0 + ya) * pic.width + x0 + xa) * 4;
+			const b = ((y0 + ya) * pic.width + x0 + xb) * 4;
+			const c = ((y0 + yb) * pic.width + x0 + xa) * 4;
+			const d = ((y0 + yb) * pic.width + x0 + xb) * 4;
+			const o = (y * W + x) * 4;
+			for (let ch = 0; ch < 3; ch++) {
+				const t = src[a + ch] + (src[b + ch] - src[a + ch]) * fx;
+				const u = src[c + ch] + (src[d + ch] - src[c + ch]) * fx;
+				out[o + ch] = t + (u - t) * fy;
+			}
+			out[o + 3] = 255;
+		}
+	}
+	return { data: out, width: W, height: H };
+}
+
 /** The picture turned a quarter clockwise. */
 export function quarterTurn(pic: Picture): Picture {
 	const { width: W, height: H } = pic;
@@ -440,8 +482,9 @@ async function readOnce(pic: Picture, models: Models, options: ReadOptions): Pro
 		rank ? rank(c.box, c.flip, pic.width, pic.height) : c.flip ? 1 : 0;
 	candidates.sort((a, b) => key(a) - key(b));
 
-	const read: (Line & { flip: boolean })[] = [];
+	const read: Line[] = [];
 	let flipped = false;
+	let accepted = false;
 	for (const { box, flip } of candidates) {
 		const input = lineInput(pic, box, flip);
 		const out = await models.recognition(input.data, [1, 3, LINE_HEIGHT, input.width]);
@@ -450,10 +493,12 @@ async function readOnce(pic: Picture, models: Models, options: ReadOptions): Pro
 		// The code is all that is wanted; the remaining lines are not worth the time.
 		if (accept?.(text)) {
 			flipped = flip;
+			accepted = true;
 			break;
 		}
 	}
-	// Report the lines read the same way up as the winner; the others are mostly nonsense.
-	const lines: Line[] = read.filter((l) => l.flip === flipped).map(({ flip: _flip, ...line }) => line);
+	// With a winner, report the lines read the same way up as it; the others are mostly nonsense.
+	// Without one, report everything: the caller may want to look for other clues.
+	const lines = accepted ? read.filter((l) => l.flip === flipped) : read;
 	return { lines, flipped, turned: false, detMs: Math.round(t1 - t0), recMs: Math.round(now() - t1), boxes: boxes.length };
 }
