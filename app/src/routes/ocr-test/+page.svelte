@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { asset } from '$app/paths';
 	import { cardById } from '../../lib/cards';
 	import { parsePrintedCode, type PrintedCode } from '../../lib/code';
@@ -31,11 +32,19 @@
 	// default wherever the browser has it.
 	let engine = $state<Engine>('gpu' in navigator ? 'webgpu' : 'wasm');
 	let maxSide = $state(2016);
-	let status = $state('Not loaded yet. Pick a photo to start.');
+	let status = $state('Not loaded yet. Start the camera or pick a photo.');
 	let loadMs = $state<number | null>(null);
 	let busy = $state(false);
 	let results = $state<Result[]>([]);
 	let error = $state<string | null>(null);
+
+	// Live camera: the page keeps taking pictures from the video by itself, one after the other.
+	let video = $state<HTMLVideoElement | null>(null);
+	let stream: MediaStream | null = null;
+	let live = $state(false);
+	let hasLight = $state(false);
+	let light = $state(true);
+	let cameraInfo = $state('');
 
 	async function getReader(): Promise<Reader> {
 		if (reader && readerEngine === engine) return reader;
@@ -62,8 +71,7 @@
 	 * Draws the photo onto a canvas, shrunk to `maxSide` and turned by `turns` quarter turns, and
 	 * returns it as a temporary image address.
 	 */
-	async function prepare(file: File, turns: number) {
-		const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+	async function prepare(bitmap: ImageBitmap, turns: number) {
 		const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
 		const w = Math.round(bitmap.width * scale);
 		const h = Math.round(bitmap.height * scale);
@@ -76,21 +84,20 @@
 		ctx.translate(canvas.width / 2, canvas.height / 2);
 		ctx.rotate((turns * Math.PI) / 2);
 		ctx.drawImage(bitmap, -w / 2, -h / 2, w, h);
-		bitmap.close();
 		const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, 'image/jpeg', 0.92));
 		if (!blob) throw new Error('Could not prepare the photo.');
 		return { url: URL.createObjectURL(blob), width: canvas.width, height: canvas.height };
 	}
 
 	/** A card can lie any way round, so the photo is read as taken first and then turned. */
-	async function read(r: Reader, file: File, label: string): Promise<Result> {
+	async function read(r: Reader, picture: ImageBitmap, label: string): Promise<Result> {
 		const t0 = performance.now();
 		let first: Omit<Result, 'ms' | 'tries'> | null = null;
 		const tries: number[] = [];
 		const order = [0, 1, 3, 2];
 		for (const [n, turns] of order.entries()) {
 			status = `${label}, try ${n + 1} of ${order.length}…`;
-			const { url, width, height } = await prepare(file, turns);
+			const { url, width, height } = await prepare(picture, turns);
 			// Let the browser paint the status line before the reader blocks the page.
 			await new Promise((done) => setTimeout(done, 30));
 			const tTry = performance.now();
@@ -120,7 +127,13 @@
 		try {
 			const r = await getReader();
 			for (const [i, file] of files.entries()) {
-				results = [await read(r, file, `Reading photo ${i + 1} of ${files.length}`), ...results];
+				const picture = await createImageBitmap(file, { imageOrientation: 'from-image' });
+				try {
+					const label = `Reading photo ${i + 1} of ${files.length}`;
+					results = [await read(r, picture, label), ...results];
+				} finally {
+					picture.close();
+				}
 			}
 			status = 'Done. Pick another photo to read more.';
 		} catch (e) {
@@ -129,6 +142,59 @@
 		} finally {
 			busy = false;
 			input.value = '';
+		}
+	}
+
+	async function setLight(on: boolean) {
+		const track = stream?.getVideoTracks()[0];
+		if (!track || !hasLight) return;
+		// `torch` is not in TypeScript's built-in types yet.
+		await track.applyConstraints({ advanced: [{ torch: on } as MediaTrackConstraintSet] });
+	}
+
+	function stopCamera() {
+		live = false;
+		stream?.getTracks().forEach((t) => t.stop());
+		stream = null;
+		if (video) video.srcObject = null;
+	}
+	onDestroy(stopCamera);
+
+	async function startCamera() {
+		error = null;
+		busy = true;
+		try {
+			stream = await navigator.mediaDevices.getUserMedia({
+				audio: false,
+				video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1440 } }
+			});
+			const track = stream.getVideoTracks()[0];
+			hasLight = 'torch' in track.getCapabilities();
+			video!.srcObject = stream;
+			await video!.play();
+			await setLight(light);
+			cameraInfo = `${video!.videoWidth}×${video!.videoHeight} px`;
+			live = true;
+			const r = await getReader();
+			let n = 0;
+			while (live) {
+				const picture = await createImageBitmap(video!);
+				try {
+					const result = await read(r, picture, `Reading picture ${++n}`);
+					if (live) results = [result, ...results].slice(0, 30);
+				} finally {
+					picture.close();
+				}
+				// Short break so the page stays usable between pictures.
+				await new Promise((done) => setTimeout(done, 200));
+			}
+			status = 'Camera stopped.';
+		} catch (e) {
+			error = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+			status = 'Failed.';
+		} finally {
+			stopCamera();
+			busy = false;
 		}
 	}
 </script>
@@ -140,8 +206,9 @@
 <main>
 	<h1>Reader test</h1>
 	<p>
-		Take a photo of one card (flash on, about 11 cm away). The card can lie any way round. The page
-		reads its printed code and shows how long that took. Nothing leaves this device.
+		Start the camera and hold the phone about 11 cm above one card. The card can lie any way round.
+		The page keeps reading the printed code by itself and shows how long each read took. Nothing
+		leaves this device.
 	</p>
 
 	<div class="options">
@@ -163,10 +230,25 @@
 		</label>
 	</div>
 
-	<label class="pick" class:busy>
-		{busy ? 'Working…' : 'Take a photo'}
-		<input type="file" accept="image/*" capture="environment" onchange={onPick} disabled={busy} />
-	</label>
+	{#if live}
+		<button class="pick" onclick={stopCamera}>Stop camera</button>
+	{:else}
+		<button class="pick" class:busy onclick={startCamera} disabled={busy}>
+			{busy ? 'Working…' : 'Start camera'}
+		</button>
+	{/if}
+	<!-- svelte-ignore a11y_media_has_caption -->
+	<video bind:this={video} playsinline muted class:hidden={!live}></video>
+	{#if live}
+		<p class="meta">
+			Camera {cameraInfo}
+			{#if hasLight}
+				· <label><input type="checkbox" bind:checked={light} onchange={() => setLight(light)} /> Light</label>
+			{:else}
+				· this camera has no light the page can switch
+			{/if}
+		</p>
+	{/if}
 	<label class="pick secondary" class:busy>
 		Pick photos from the gallery
 		<input type="file" accept="image/*" multiple onchange={onPick} disabled={busy} />
@@ -223,8 +305,22 @@
 		font: inherit;
 		padding: 0.3rem;
 	}
+	video {
+		display: block;
+		width: 100%;
+		margin-top: 0.5rem;
+		border-radius: 0.5rem;
+		background: #000;
+	}
+	video.hidden {
+		display: none;
+	}
 	.pick {
 		display: block;
+		width: 100%;
+		box-sizing: border-box;
+		border: none;
+		font: inherit;
 		padding: 1rem;
 		border-radius: 0.5rem;
 		background: #1f6feb;
