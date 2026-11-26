@@ -1,5 +1,8 @@
 {
-	"source": "https://api.riftcodex.com",
+	"source": [
+		"https://api.riftcodex.com",
+		"https://piltoverarchive.com/api/external/v1"
+	],
 	"sets": [
 		{
 			"id": "OGN",
@@ -27,6 +30,11 @@
 			"published": "2025-12-01"
 		},
 		{
+			"id": "ARC",
+			"name": "Arcane Box Set",
+			"published": "2025-12-31"
+		},
+		{
 			"id": "SFD",
 			"name": "Spiritforged",
 			"published": "2026-02-13"
@@ -40,9 +48,98 @@
 			"id": "VEN",
 			"name": "Vendetta",
 			"published": "2026-07-31"
+		},
+		{
+			"id": "RAD",
+			"name": "Radiance",
+			"published": "2026-10-23"
 		}
 	],
 	"cards": [
+		{
+			"id": "arc-001",
+			"set": "ARC",
+			"num": 1,
+			"variant": "promo",
+			"name": "Vi, Destructive",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "arc-002",
+			"set": "ARC",
+			"num": 2,
+			"variant": "promo",
+			"name": "Caitlyn, Patrolling",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "arc-003",
+			"set": "ARC",
+			"num": 3,
+			"variant": "promo",
+			"name": "Heimerdinger, Inventor",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "arc-004",
+			"set": "ARC",
+			"num": 4,
+			"variant": "promo",
+			"name": "Warwick, Hunter",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "arc-005",
+			"set": "ARC",
+			"num": 5,
+			"variant": "promo",
+			"name": "Jinx, Rebel",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "arc-006",
+			"set": "ARC",
+			"num": 6,
+			"variant": "promo",
+			"name": "Viktor, Leader",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
 		{
 			"id": "jdg-059-221",
 			"set": "JDG",
@@ -5062,6 +5159,18 @@
 			"landscape": false
 		},
 		{
+			"id": "ogn-999",
+			"set": "OGN",
+			"num": 999,
+			"variant": "normal",
+			"name": "Buff",
+			"type": "Card",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": false
+		},
+		{
 			"id": "ogs-001-024",
 			"set": "OGS",
 			"num": 1,
@@ -7259,6 +7368,3092 @@
 			"landscape": true
 		},
 		{
+			"id": "rad-001",
+			"set": "RAD",
+			"num": 1,
+			"variant": "normal",
+			"name": "Amateur Demolitionist",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-r01a",
+			"set": "RAD",
+			"num": 1,
+			"variant": "rune",
+			"name": "Fury Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-sp1",
+			"set": "RAD",
+			"num": 1,
+			"variant": "special",
+			"name": "Ahri, Confident",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-002",
+			"set": "RAD",
+			"num": 2,
+			"variant": "normal",
+			"name": "Banner of Conquest",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-r02a",
+			"set": "RAD",
+			"num": 2,
+			"variant": "rune",
+			"name": "Calm Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-sp2",
+			"set": "RAD",
+			"num": 2,
+			"variant": "special",
+			"name": "Akali, Brash",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-t02",
+			"set": "RAD",
+			"num": 2,
+			"variant": "token",
+			"name": "Bomb",
+			"type": "Gear",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": false
+		},
+		{
+			"id": "rad-003",
+			"set": "RAD",
+			"num": 3,
+			"variant": "normal",
+			"name": "Bilgewater Tracker",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-r03a",
+			"set": "RAD",
+			"num": 3,
+			"variant": "rune",
+			"name": "Mind Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-sp3",
+			"set": "RAD",
+			"num": 3,
+			"variant": "special",
+			"name": "Evelynn, In Control",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-004",
+			"set": "RAD",
+			"num": 4,
+			"variant": "normal",
+			"name": "Brawl",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-r04a",
+			"set": "RAD",
+			"num": 4,
+			"variant": "rune",
+			"name": "Body Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-sp4",
+			"set": "RAD",
+			"num": 4,
+			"variant": "special",
+			"name": "Kai'Sa, Rebel",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-005",
+			"set": "RAD",
+			"num": 5,
+			"variant": "normal",
+			"name": "Lingering Animus",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-r05a",
+			"set": "RAD",
+			"num": 5,
+			"variant": "rune",
+			"name": "Chaos Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-sp5",
+			"set": "RAD",
+			"num": 5,
+			"variant": "special",
+			"name": "Seraphine, Not Alone",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-006",
+			"set": "RAD",
+			"num": 6,
+			"variant": "normal",
+			"name": "Scorched Earth",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-r06a",
+			"set": "RAD",
+			"num": 6,
+			"variant": "rune",
+			"name": "Order Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-007",
+			"set": "RAD",
+			"num": 7,
+			"variant": "normal",
+			"name": "Rally for War",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-008",
+			"set": "RAD",
+			"num": 8,
+			"variant": "normal",
+			"name": "War Scout",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-009",
+			"set": "RAD",
+			"num": 9,
+			"variant": "normal",
+			"name": "Antagonistic Apparatus",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-010",
+			"set": "RAD",
+			"num": 10,
+			"variant": "normal",
+			"name": "Forbidden Technique",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-011",
+			"set": "RAD",
+			"num": 11,
+			"variant": "normal",
+			"name": "Incorrigible Construct",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-012",
+			"set": "RAD",
+			"num": 12,
+			"variant": "normal",
+			"name": "Runeblade Anvil",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-013",
+			"set": "RAD",
+			"num": 13,
+			"variant": "normal",
+			"name": "Lost to the Sands",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-014",
+			"set": "RAD",
+			"num": 14,
+			"variant": "normal",
+			"name": "Shimmering Swimmer",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-015",
+			"set": "RAD",
+			"num": 15,
+			"variant": "normal",
+			"name": "Akali, Brash",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-016",
+			"set": "RAD",
+			"num": 16,
+			"variant": "normal",
+			"name": "Coalesced Energy",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-017",
+			"set": "RAD",
+			"num": 17,
+			"variant": "normal",
+			"name": "Detonation Amplifier",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-018",
+			"set": "RAD",
+			"num": 18,
+			"variant": "normal",
+			"name": "Drakehound Packmaster",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-019",
+			"set": "RAD",
+			"num": 19,
+			"variant": "normal",
+			"name": "Firebrand Raider",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-020",
+			"set": "RAD",
+			"num": 20,
+			"variant": "normal",
+			"name": "Mordekaiser, Twice Slain",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-020a",
+			"set": "RAD",
+			"num": 20,
+			"variant": "alt",
+			"name": "Mordekaiser, Twice Slain",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-021",
+			"set": "RAD",
+			"num": 21,
+			"variant": "normal",
+			"name": "Ekko, Revolutionary",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-021a",
+			"set": "RAD",
+			"num": 21,
+			"variant": "alt",
+			"name": "Ekko, Revolutionary",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-021b",
+			"set": "RAD",
+			"num": 21,
+			"variant": "promo",
+			"name": "Ekko, Revolutionary",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-022",
+			"set": "RAD",
+			"num": 22,
+			"variant": "normal",
+			"name": "Whirling Twirligig",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-023",
+			"set": "RAD",
+			"num": 23,
+			"variant": "normal",
+			"name": "Ziggs, Short-Fused",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-023a",
+			"set": "RAD",
+			"num": 23,
+			"variant": "alt",
+			"name": "Ziggs, Short-Fused",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-024",
+			"set": "RAD",
+			"num": 24,
+			"variant": "normal",
+			"name": "Blossoming Dreamroot",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-025",
+			"set": "RAD",
+			"num": 25,
+			"variant": "normal",
+			"name": "Consult the Heavens",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-026",
+			"set": "RAD",
+			"num": 26,
+			"variant": "normal",
+			"name": "Entrenched Boar",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-027",
+			"set": "RAD",
+			"num": 27,
+			"variant": "normal",
+			"name": "Iridescent Avian",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-028",
+			"set": "RAD",
+			"num": 28,
+			"variant": "normal",
+			"name": "Ki Burst",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-029",
+			"set": "RAD",
+			"num": 29,
+			"variant": "normal",
+			"name": "Life from Stone",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-030",
+			"set": "RAD",
+			"num": 30,
+			"variant": "normal",
+			"name": "Sanctum Conservator",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-031",
+			"set": "RAD",
+			"num": 31,
+			"variant": "normal",
+			"name": "Stoic Ferryman",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-032",
+			"set": "RAD",
+			"num": 32,
+			"variant": "normal",
+			"name": "Battle Preparations",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-033",
+			"set": "RAD",
+			"num": 33,
+			"variant": "normal",
+			"name": "Command: Attack",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-034",
+			"set": "RAD",
+			"num": 34,
+			"variant": "normal",
+			"name": "Hunker Down",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-035",
+			"set": "RAD",
+			"num": 35,
+			"variant": "normal",
+			"name": "Invigorating Bloom",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-036",
+			"set": "RAD",
+			"num": 36,
+			"variant": "normal",
+			"name": "Storm Raptor",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-037",
+			"set": "RAD",
+			"num": 37,
+			"variant": "normal",
+			"name": "Watchful Curator",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-038",
+			"set": "RAD",
+			"num": 38,
+			"variant": "normal",
+			"name": "Ahri, Confident",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-039",
+			"set": "RAD",
+			"num": 39,
+			"variant": "normal",
+			"name": "Ephemeral Ward",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-040",
+			"set": "RAD",
+			"num": 40,
+			"variant": "normal",
+			"name": "Heartening Soul",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-041",
+			"set": "RAD",
+			"num": 41,
+			"variant": "normal",
+			"name": "Hush",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-042",
+			"set": "RAD",
+			"num": 42,
+			"variant": "normal",
+			"name": "Orianna, Exquisite",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-042a",
+			"set": "RAD",
+			"num": 42,
+			"variant": "alt",
+			"name": "Orianna, Exquisite",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-043",
+			"set": "RAD",
+			"num": 43,
+			"variant": "normal",
+			"name": "Riven, Broken Blade",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-043a",
+			"set": "RAD",
+			"num": 43,
+			"variant": "alt",
+			"name": "Riven, Broken Blade",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-044",
+			"set": "RAD",
+			"num": 44,
+			"variant": "normal",
+			"name": "Hunting Blind",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-045",
+			"set": "RAD",
+			"num": 45,
+			"variant": "normal",
+			"name": "K'Sante, Dauntless",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-045a",
+			"set": "RAD",
+			"num": 45,
+			"variant": "alt",
+			"name": "K'Sante, Dauntless",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-046",
+			"set": "RAD",
+			"num": 46,
+			"variant": "normal",
+			"name": "Resplendent Rostrum",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-047",
+			"set": "RAD",
+			"num": 47,
+			"variant": "normal",
+			"name": "Fanfare",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-048",
+			"set": "RAD",
+			"num": 48,
+			"variant": "normal",
+			"name": "High Note",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-049",
+			"set": "RAD",
+			"num": 49,
+			"variant": "normal",
+			"name": "Industrious Mechsmith",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-050",
+			"set": "RAD",
+			"num": 50,
+			"variant": "normal",
+			"name": "Mysterious Chronomancer",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-051",
+			"set": "RAD",
+			"num": 51,
+			"variant": "normal",
+			"name": "Parallel Convergence",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-052",
+			"set": "RAD",
+			"num": 52,
+			"variant": "normal",
+			"name": "Resource Extractor",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-053",
+			"set": "RAD",
+			"num": 53,
+			"variant": "normal",
+			"name": "Strigian Oracle",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-054",
+			"set": "RAD",
+			"num": 54,
+			"variant": "normal",
+			"name": "Trinket Peddler",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-055",
+			"set": "RAD",
+			"num": 55,
+			"variant": "normal",
+			"name": "Clanging Sentry",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-056",
+			"set": "RAD",
+			"num": 56,
+			"variant": "normal",
+			"name": "Improvised Projectile",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-057",
+			"set": "RAD",
+			"num": 57,
+			"variant": "normal",
+			"name": "Piltovan Guidebot",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-058",
+			"set": "RAD",
+			"num": 58,
+			"variant": "normal",
+			"name": "Riptide Mage",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-059",
+			"set": "RAD",
+			"num": 59,
+			"variant": "normal",
+			"name": "Supernova",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-060",
+			"set": "RAD",
+			"num": 60,
+			"variant": "normal",
+			"name": "The Empyrean",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-061",
+			"set": "RAD",
+			"num": 61,
+			"variant": "normal",
+			"name": "Ekko, Ingenious",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-061a",
+			"set": "RAD",
+			"num": 61,
+			"variant": "alt",
+			"name": "Ekko, Ingenious",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-062",
+			"set": "RAD",
+			"num": 62,
+			"variant": "normal",
+			"name": "Gravity Field",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-063",
+			"set": "RAD",
+			"num": 63,
+			"variant": "normal",
+			"name": "Kai'Sa, Rebel",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-064",
+			"set": "RAD",
+			"num": 64,
+			"variant": "normal",
+			"name": "Scrutinizing Scope",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-065",
+			"set": "RAD",
+			"num": 65,
+			"variant": "normal",
+			"name": "Seraphine, Inspiring",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-065a",
+			"set": "RAD",
+			"num": 65,
+			"variant": "alt",
+			"name": "Seraphine, Inspiring",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-066",
+			"set": "RAD",
+			"num": 66,
+			"variant": "normal",
+			"name": "Spirit of the Forge",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-067",
+			"set": "RAD",
+			"num": 67,
+			"variant": "normal",
+			"name": "Clocktower Guardian",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-068",
+			"set": "RAD",
+			"num": 68,
+			"variant": "normal",
+			"name": "Orianna, Mechanical Marvel",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-068a",
+			"set": "RAD",
+			"num": 68,
+			"variant": "alt",
+			"name": "Orianna, Mechanical Marvel",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-069",
+			"set": "RAD",
+			"num": 69,
+			"variant": "normal",
+			"name": "Zero Point Inflection",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-070",
+			"set": "RAD",
+			"num": 70,
+			"variant": "normal",
+			"name": "Hold 'Em",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-071",
+			"set": "RAD",
+			"num": 71,
+			"variant": "normal",
+			"name": "Nazuman Ntofo",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-072",
+			"set": "RAD",
+			"num": 72,
+			"variant": "normal",
+			"name": "Overloaded Traveler",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-073",
+			"set": "RAD",
+			"num": 73,
+			"variant": "normal",
+			"name": "Pillaged Armory",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-074",
+			"set": "RAD",
+			"num": 74,
+			"variant": "normal",
+			"name": "Raving Witness",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-075",
+			"set": "RAD",
+			"num": 75,
+			"variant": "normal",
+			"name": "Skystrike Squadron",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-076",
+			"set": "RAD",
+			"num": 76,
+			"variant": "normal",
+			"name": "Sneaky Zeebles",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-077",
+			"set": "RAD",
+			"num": 77,
+			"variant": "normal",
+			"name": "Wrath of the Freljord",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-078",
+			"set": "RAD",
+			"num": 78,
+			"variant": "normal",
+			"name": "Armored Tusker",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-079",
+			"set": "RAD",
+			"num": 79,
+			"variant": "normal",
+			"name": "Avalanche",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-080",
+			"set": "RAD",
+			"num": 80,
+			"variant": "normal",
+			"name": "Bloodscent Swarm",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-081",
+			"set": "RAD",
+			"num": 81,
+			"variant": "normal",
+			"name": "Elnuk Herd",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-082",
+			"set": "RAD",
+			"num": 82,
+			"variant": "normal",
+			"name": "Primordial Roar",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-083",
+			"set": "RAD",
+			"num": 83,
+			"variant": "normal",
+			"name": "Stalwart Goatherd",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-084",
+			"set": "RAD",
+			"num": 84,
+			"variant": "normal",
+			"name": "Cataclysm",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-085",
+			"set": "RAD",
+			"num": 85,
+			"variant": "normal",
+			"name": "Graves, Blasting Through",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-086",
+			"set": "RAD",
+			"num": 86,
+			"variant": "normal",
+			"name": "K'Sante, Courageous",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-086a",
+			"set": "RAD",
+			"num": 86,
+			"variant": "alt",
+			"name": "K'Sante, Courageous",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-087",
+			"set": "RAD",
+			"num": 87,
+			"variant": "normal",
+			"name": "Portable Portal",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-088",
+			"set": "RAD",
+			"num": 88,
+			"variant": "normal",
+			"name": "Staunch Survivor",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-089",
+			"set": "RAD",
+			"num": 89,
+			"variant": "normal",
+			"name": "Titanic Shrine",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-090",
+			"set": "RAD",
+			"num": 90,
+			"variant": "normal",
+			"name": "Evelynn, Consuming",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-090a",
+			"set": "RAD",
+			"num": 90,
+			"variant": "alt",
+			"name": "Evelynn, Consuming",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-091",
+			"set": "RAD",
+			"num": 91,
+			"variant": "normal",
+			"name": "Jarvan IV, Martial Paragon",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-091a",
+			"set": "RAD",
+			"num": 91,
+			"variant": "alt",
+			"name": "Jarvan IV, Martial Paragon",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-092",
+			"set": "RAD",
+			"num": 92,
+			"variant": "normal",
+			"name": "Seraphic Wyvern",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-093",
+			"set": "RAD",
+			"num": 93,
+			"variant": "normal",
+			"name": "Disposal Expert",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-094",
+			"set": "RAD",
+			"num": 94,
+			"variant": "normal",
+			"name": "Explosimian",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-095",
+			"set": "RAD",
+			"num": 95,
+			"variant": "normal",
+			"name": "Momentary Companion",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-096",
+			"set": "RAD",
+			"num": 96,
+			"variant": "normal",
+			"name": "Satchel Charge",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-097",
+			"set": "RAD",
+			"num": 97,
+			"variant": "normal",
+			"name": "Siren of the Shallows",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-098",
+			"set": "RAD",
+			"num": 98,
+			"variant": "normal",
+			"name": "Siren's Song",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-099",
+			"set": "RAD",
+			"num": 99,
+			"variant": "normal",
+			"name": "Suave Negotiator",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-100",
+			"set": "RAD",
+			"num": 100,
+			"variant": "normal",
+			"name": "The Waters' Wage",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-101",
+			"set": "RAD",
+			"num": 101,
+			"variant": "normal",
+			"name": "An Offer You Can't Refuse",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-102",
+			"set": "RAD",
+			"num": 102,
+			"variant": "normal",
+			"name": "Demon Shade",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-103",
+			"set": "RAD",
+			"num": 103,
+			"variant": "normal",
+			"name": "Gutter Guardian",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-104",
+			"set": "RAD",
+			"num": 104,
+			"variant": "normal",
+			"name": "Pitiless Stalker",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-105",
+			"set": "RAD",
+			"num": 105,
+			"variant": "normal",
+			"name": "Reckless Innovator",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-106",
+			"set": "RAD",
+			"num": 106,
+			"variant": "normal",
+			"name": "The Good Stuff",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-107",
+			"set": "RAD",
+			"num": 107,
+			"variant": "normal",
+			"name": "Bedeviling Stranger",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-108",
+			"set": "RAD",
+			"num": 108,
+			"variant": "normal",
+			"name": "Bushwhack Trap",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-109",
+			"set": "RAD",
+			"num": 109,
+			"variant": "normal",
+			"name": "Evelynn, In Control",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-109a",
+			"set": "RAD",
+			"num": 109,
+			"variant": "alt",
+			"name": "Evelynn, In Control",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-110",
+			"set": "RAD",
+			"num": 110,
+			"variant": "normal",
+			"name": "Lulu, Whimsical",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-111",
+			"set": "RAD",
+			"num": 111,
+			"variant": "normal",
+			"name": "Mechanical Bandit",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-112",
+			"set": "RAD",
+			"num": 112,
+			"variant": "normal",
+			"name": "Ziggs, Explosive",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-112a",
+			"set": "RAD",
+			"num": 112,
+			"variant": "alt",
+			"name": "Ziggs, Explosive",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-113",
+			"set": "RAD",
+			"num": 113,
+			"variant": "normal",
+			"name": "Angler Wyrm",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-114",
+			"set": "RAD",
+			"num": 114,
+			"variant": "normal",
+			"name": "Riven Deserter",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-114a",
+			"set": "RAD",
+			"num": 114,
+			"variant": "alt",
+			"name": "Riven Deserter",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-115",
+			"set": "RAD",
+			"num": 115,
+			"variant": "normal",
+			"name": "Transpositionist",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-116",
+			"set": "RAD",
+			"num": 116,
+			"variant": "normal",
+			"name": "Concert Poster",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-117",
+			"set": "RAD",
+			"num": 117,
+			"variant": "normal",
+			"name": "For Demacia!",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-118",
+			"set": "RAD",
+			"num": 118,
+			"variant": "normal",
+			"name": "Herald of the Emperor",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-119",
+			"set": "RAD",
+			"num": 119,
+			"variant": "normal",
+			"name": "Hunting Dog",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-120",
+			"set": "RAD",
+			"num": 120,
+			"variant": "normal",
+			"name": "Meticulous Restorationist",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-121",
+			"set": "RAD",
+			"num": 121,
+			"variant": "normal",
+			"name": "One-Two Punch",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-122",
+			"set": "RAD",
+			"num": 122,
+			"variant": "normal",
+			"name": "Party Crasher",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-123",
+			"set": "RAD",
+			"num": 123,
+			"variant": "normal",
+			"name": "Protector's Shield",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-124",
+			"set": "RAD",
+			"num": 124,
+			"variant": "normal",
+			"name": "Burn Away",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-125",
+			"set": "RAD",
+			"num": 125,
+			"variant": "normal",
+			"name": "Dune Devourer",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-126",
+			"set": "RAD",
+			"num": 126,
+			"variant": "normal",
+			"name": "Mournful Spirit",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-127",
+			"set": "RAD",
+			"num": 127,
+			"variant": "normal",
+			"name": "Rousing Display",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-128",
+			"set": "RAD",
+			"num": 128,
+			"variant": "normal",
+			"name": "Steadfast Outrider",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-129",
+			"set": "RAD",
+			"num": 129,
+			"variant": "normal",
+			"name": "Trifarian Captain",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-130",
+			"set": "RAD",
+			"num": 130,
+			"variant": "normal",
+			"name": "Battlefield Armorer",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-131",
+			"set": "RAD",
+			"num": 131,
+			"variant": "normal",
+			"name": "Demacian Illuminators",
+			"type": "Unit",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-132",
+			"set": "RAD",
+			"num": 132,
+			"variant": "normal",
+			"name": "Heimerdinger, Academy Instructor",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-133",
+			"set": "RAD",
+			"num": 133,
+			"variant": "normal",
+			"name": "Jarvan IV, Royal Heir",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Rare",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-133a",
+			"set": "RAD",
+			"num": 133,
+			"variant": "alt",
+			"name": "Jarvan IV, Royal Heir",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-134",
+			"set": "RAD",
+			"num": 134,
+			"variant": "normal",
+			"name": "Raucous Anthem",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-135",
+			"set": "RAD",
+			"num": 135,
+			"variant": "normal",
+			"name": "Remember the Fallen",
+			"type": "Spell",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-136",
+			"set": "RAD",
+			"num": 136,
+			"variant": "normal",
+			"name": "Dockside Lock-Up",
+			"type": "Gear",
+			"supertype": null,
+			"rarity": "Epic",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-137",
+			"set": "RAD",
+			"num": 137,
+			"variant": "normal",
+			"name": "Mordekaiser, Dominating",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-137a",
+			"set": "RAD",
+			"num": 137,
+			"variant": "alt",
+			"name": "Mordekaiser, Dominating",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-138",
+			"set": "RAD",
+			"num": 138,
+			"variant": "normal",
+			"name": "Seraphine, Not Alone",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-138a",
+			"set": "RAD",
+			"num": 138,
+			"variant": "alt",
+			"name": "Seraphine, Not Alone",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-139",
+			"set": "RAD",
+			"num": 139,
+			"variant": "normal",
+			"name": "Ekko, Boy Who Shattered Time",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Fury",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-140",
+			"set": "RAD",
+			"num": 140,
+			"variant": "normal",
+			"name": "Chronobreak",
+			"type": "Spell",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Fury",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-141",
+			"set": "RAD",
+			"num": 141,
+			"variant": "normal",
+			"name": "Ziggs, Hexplosives Expert",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Fury",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-142",
+			"set": "RAD",
+			"num": 142,
+			"variant": "normal",
+			"name": "Hexplosive Minefield",
+			"type": "Spell",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Fury",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-143",
+			"set": "RAD",
+			"num": 143,
+			"variant": "normal",
+			"name": "Mordekaiser, Iron Revenant",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Fury",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-144",
+			"set": "RAD",
+			"num": 144,
+			"variant": "normal",
+			"name": "Realm of Death",
+			"type": "Spell",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Fury",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-145",
+			"set": "RAD",
+			"num": 145,
+			"variant": "normal",
+			"name": "Orianna, Lady of Clockwork",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Calm",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-146",
+			"set": "RAD",
+			"num": 146,
+			"variant": "normal",
+			"name": "The Ball",
+			"type": "Gear",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Calm",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-147",
+			"set": "RAD",
+			"num": 147,
+			"variant": "normal",
+			"name": "K'Sante, Pride of Nazumah",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Body",
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-148",
+			"set": "RAD",
+			"num": 148,
+			"variant": "normal",
+			"name": "Ntofo Strikes",
+			"type": "Spell",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Body",
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-149",
+			"set": "RAD",
+			"num": 149,
+			"variant": "normal",
+			"name": "Riven, The Exile",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Calm",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-150",
+			"set": "RAD",
+			"num": 150,
+			"variant": "normal",
+			"name": "Blade of the Exile",
+			"type": "Gear",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Calm",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-151",
+			"set": "RAD",
+			"num": 151,
+			"variant": "normal",
+			"name": "Seraphine, Starry-Eyed Songstress",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Order",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-152",
+			"set": "RAD",
+			"num": 152,
+			"variant": "normal",
+			"name": "Encore",
+			"type": "Spell",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Order",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-153",
+			"set": "RAD",
+			"num": 153,
+			"variant": "normal",
+			"name": "Evelynn, Agony's Embrace",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Body",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-154",
+			"set": "RAD",
+			"num": 154,
+			"variant": "normal",
+			"name": "Last Caress",
+			"type": "Spell",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Body",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-155",
+			"set": "RAD",
+			"num": 155,
+			"variant": "normal",
+			"name": "Jarvan IV, Exemplar of Demacia",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Rare",
+			"domains": [
+				"Body",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-156",
+			"set": "RAD",
+			"num": 156,
+			"variant": "normal",
+			"name": "Demacian Standard",
+			"type": "Gear",
+			"supertype": "Signature",
+			"rarity": "Epic",
+			"domains": [
+				"Body",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-157",
+			"set": "RAD",
+			"num": 157,
+			"variant": "normal",
+			"name": "Bandle Scouts' Academy",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-158",
+			"set": "RAD",
+			"num": 158,
+			"variant": "normal",
+			"name": "Black Market",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-159",
+			"set": "RAD",
+			"num": 159,
+			"variant": "normal",
+			"name": "Black Rose Sanctum",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-160",
+			"set": "RAD",
+			"num": 160,
+			"variant": "normal",
+			"name": "Cosmic Vista",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-161",
+			"set": "RAD",
+			"num": 161,
+			"variant": "normal",
+			"name": "Durand Memorial",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-162",
+			"set": "RAD",
+			"num": 162,
+			"variant": "normal",
+			"name": "Firelights' Hideout",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-163",
+			"set": "RAD",
+			"num": 163,
+			"variant": "normal",
+			"name": "Hunters' Circle",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-164",
+			"set": "RAD",
+			"num": 164,
+			"variant": "normal",
+			"name": "Packed Amphitheater",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-165",
+			"set": "RAD",
+			"num": 165,
+			"variant": "normal",
+			"name": "Rakelstake",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-166",
+			"set": "RAD",
+			"num": 166,
+			"variant": "normal",
+			"name": "Ruined Monastery",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Uncommon",
+			"domains": [],
+			"landscape": true
+		},
+		{
+			"id": "rad-167",
+			"set": "RAD",
+			"num": 167,
+			"variant": "normal",
+			"name": "Neeko, Blending In",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Epic",
+			"domains": [],
+			"landscape": false
+		},
+		{
+			"id": "rad-168",
+			"set": "RAD",
+			"num": 168,
+			"variant": "overnumbered",
+			"name": "Ekko, Boy Who Shattered Time",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Fury",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-168*",
+			"set": "RAD",
+			"num": 168,
+			"variant": "signature",
+			"name": "Ekko, Boy Who Shattered Time",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Fury",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-169",
+			"set": "RAD",
+			"num": 169,
+			"variant": "overnumbered",
+			"name": "Ziggs, Hexplosives Expert",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Fury",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-169*",
+			"set": "RAD",
+			"num": 169,
+			"variant": "signature",
+			"name": "Ziggs, Hexplosives Expert",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Fury",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-170",
+			"set": "RAD",
+			"num": 170,
+			"variant": "overnumbered",
+			"name": "Mordekaiser, Iron Revenant",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Fury",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-170*",
+			"set": "RAD",
+			"num": 170,
+			"variant": "signature",
+			"name": "Mordekaiser, Iron Revenant",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Fury",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-171",
+			"set": "RAD",
+			"num": 171,
+			"variant": "overnumbered",
+			"name": "Orianna, Lady of Clockwork",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Calm",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-171*",
+			"set": "RAD",
+			"num": 171,
+			"variant": "signature",
+			"name": "Orianna, Lady of Clockwork",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Calm",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-172",
+			"set": "RAD",
+			"num": 172,
+			"variant": "overnumbered",
+			"name": "K'Sante, Pride of Nazumah",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Body",
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-173",
+			"set": "RAD",
+			"num": 173,
+			"variant": "overnumbered",
+			"name": "Riven, The Exile",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Calm",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-174",
+			"set": "RAD",
+			"num": 174,
+			"variant": "overnumbered",
+			"name": "Seraphine, Starry-Eyed Songstress",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Order",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-174*",
+			"set": "RAD",
+			"num": 174,
+			"variant": "signature",
+			"name": "Seraphine, Starry-Eyed Songstress",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Order",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-175",
+			"set": "RAD",
+			"num": 175,
+			"variant": "overnumbered",
+			"name": "Evelynn, Agony's Embrace",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Body",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-176",
+			"set": "RAD",
+			"num": 176,
+			"variant": "overnumbered",
+			"name": "Jarvan IV, Exemplar of Demacia",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Body",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-177",
+			"set": "RAD",
+			"num": 177,
+			"variant": "overnumbered",
+			"name": "Ekko, Revolutionary",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-178",
+			"set": "RAD",
+			"num": 178,
+			"variant": "overnumbered",
+			"name": "K'Sante, Courageous",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-179",
+			"set": "RAD",
+			"num": 179,
+			"variant": "overnumbered",
+			"name": "Aphelios, Exalted",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-180",
+			"set": "RAD",
+			"num": 180,
+			"variant": "overnumbered",
+			"name": "Ezreal, Dashing",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-181",
+			"set": "RAD",
+			"num": 181,
+			"variant": "overnumbered",
+			"name": "Yone, Blademaster",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-182",
+			"set": "RAD",
+			"num": 182,
+			"variant": "overnumbered",
+			"name": "Kayn, Unleashed",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-183",
+			"set": "RAD",
+			"num": 183,
+			"variant": "overnumbered",
+			"name": "Sett, Kingpin",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "rad-184",
+			"set": "RAD",
+			"num": 184,
+			"variant": "overnumbered",
+			"name": "Packed Amphitheater",
+			"type": "Battlefield",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [],
+			"landscape": true
+		},
+		{
 			"id": "sfd-001-221",
 			"set": "SFD",
 			"num": 1,
@@ -7270,6 +10465,46 @@
 			"domains": [
 				"Fury"
 			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r01",
+			"set": "SFD",
+			"num": 1,
+			"variant": "rune",
+			"name": "Fury Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r01a",
+			"set": "SFD",
+			"num": 1,
+			"variant": "rune",
+			"name": "Fury Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-t01",
+			"set": "SFD",
+			"num": 1,
+			"variant": "token",
+			"name": "Mech",
+			"type": "Unit",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
 			"landscape": false
 		},
 		{
@@ -7287,6 +10522,46 @@
 			"landscape": false
 		},
 		{
+			"id": "sfd-r02",
+			"set": "SFD",
+			"num": 2,
+			"variant": "rune",
+			"name": "Calm Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r02a",
+			"set": "SFD",
+			"num": 2,
+			"variant": "rune",
+			"name": "Calm Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-t02",
+			"set": "SFD",
+			"num": 2,
+			"variant": "token",
+			"name": "Sand Soldier",
+			"type": "Unit",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": false
+		},
+		{
 			"id": "sfd-003-221",
 			"set": "SFD",
 			"num": 3,
@@ -7297,6 +10572,34 @@
 			"rarity": "Common",
 			"domains": [
 				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r03",
+			"set": "SFD",
+			"num": 3,
+			"variant": "rune",
+			"name": "Mind Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r03a",
+			"set": "SFD",
+			"num": 3,
+			"variant": "rune",
+			"name": "Mind Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
 			],
 			"landscape": false
 		},
@@ -7329,6 +10632,34 @@
 			"landscape": false
 		},
 		{
+			"id": "sfd-r04",
+			"set": "SFD",
+			"num": 4,
+			"variant": "rune",
+			"name": "Body Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r04a",
+			"set": "SFD",
+			"num": 4,
+			"variant": "rune",
+			"name": "Body Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
 			"id": "sfd-005-221",
 			"set": "SFD",
 			"num": 5,
@@ -7343,6 +10674,34 @@
 			"landscape": false
 		},
 		{
+			"id": "sfd-r05",
+			"set": "SFD",
+			"num": 5,
+			"variant": "rune",
+			"name": "Chaos Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r05a",
+			"set": "SFD",
+			"num": 5,
+			"variant": "rune",
+			"name": "Chaos Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
 			"id": "sfd-006-221",
 			"set": "SFD",
 			"num": 6,
@@ -7353,6 +10712,34 @@
 			"rarity": "Common",
 			"domains": [
 				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r06",
+			"set": "SFD",
+			"num": 6,
+			"variant": "rune",
+			"name": "Order Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "sfd-r06a",
+			"set": "SFD",
+			"num": 6,
+			"variant": "rune",
+			"name": "Order Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
 			],
 			"landscape": false
 		},
@@ -11343,6 +14730,46 @@
 			"landscape": false
 		},
 		{
+			"id": "unl-r01",
+			"set": "UNL",
+			"num": 1,
+			"variant": "rune",
+			"name": "Fury Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r01a",
+			"set": "UNL",
+			"num": 1,
+			"variant": "rune",
+			"name": "Fury Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-t01",
+			"set": "UNL",
+			"num": 1,
+			"variant": "token",
+			"name": "Baron Pit",
+			"type": "Battlefield",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": true
+		},
+		{
 			"id": "unl-002-219",
 			"set": "UNL",
 			"num": 2,
@@ -11354,6 +14781,46 @@
 			"domains": [
 				"Fury"
 			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r02",
+			"set": "UNL",
+			"num": 2,
+			"variant": "rune",
+			"name": "Calm Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r02a",
+			"set": "UNL",
+			"num": 2,
+			"variant": "rune",
+			"name": "Calm Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-t02",
+			"set": "UNL",
+			"num": 2,
+			"variant": "token",
+			"name": "Bird",
+			"type": "Unit",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
 			"landscape": false
 		},
 		{
@@ -11371,6 +14838,46 @@
 			"landscape": false
 		},
 		{
+			"id": "unl-r03",
+			"set": "UNL",
+			"num": 3,
+			"variant": "rune",
+			"name": "Mind Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r03a",
+			"set": "UNL",
+			"num": 3,
+			"variant": "rune",
+			"name": "Mind Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-t03",
+			"set": "UNL",
+			"num": 3,
+			"variant": "token",
+			"name": "Brush",
+			"type": "Battlefield",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": true
+		},
+		{
 			"id": "unl-004-219",
 			"set": "UNL",
 			"num": 4,
@@ -11381,6 +14888,34 @@
 			"rarity": "Common",
 			"domains": [
 				"Fury"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r04",
+			"set": "UNL",
+			"num": 4,
+			"variant": "rune",
+			"name": "Body Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Body"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r04a",
+			"set": "UNL",
+			"num": 4,
+			"variant": "rune",
+			"name": "Body Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Body"
 			],
 			"landscape": false
 		},
@@ -11399,6 +14934,46 @@
 			"landscape": false
 		},
 		{
+			"id": "unl-r05",
+			"set": "UNL",
+			"num": 5,
+			"variant": "rune",
+			"name": "Chaos Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r05a",
+			"set": "UNL",
+			"num": 5,
+			"variant": "rune",
+			"name": "Chaos Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-t05",
+			"set": "UNL",
+			"num": 5,
+			"variant": "token",
+			"name": "Gold",
+			"type": "Gear",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": false
+		},
+		{
 			"id": "unl-006-219",
 			"set": "UNL",
 			"num": 6,
@@ -11410,6 +14985,46 @@
 			"domains": [
 				"Fury"
 			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r06",
+			"set": "UNL",
+			"num": 6,
+			"variant": "rune",
+			"name": "Order Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Common",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-r06a",
+			"set": "UNL",
+			"num": 6,
+			"variant": "rune",
+			"name": "Order Rune",
+			"type": "Rune",
+			"supertype": "Basic",
+			"rarity": "Showcase",
+			"domains": [
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "unl-t06",
+			"set": "UNL",
+			"num": 6,
+			"variant": "token",
+			"name": "Reflection",
+			"type": "Unit",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
 			"landscape": false
 		},
 		{
@@ -11427,6 +15042,18 @@
 			"landscape": false
 		},
 		{
+			"id": "unl-t07",
+			"set": "UNL",
+			"num": 7,
+			"variant": "token",
+			"name": "Sprite",
+			"type": "Unit",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": false
+		},
+		{
 			"id": "unl-008-219",
 			"set": "UNL",
 			"num": 8,
@@ -11438,6 +15065,18 @@
 			"domains": [
 				"Fury"
 			],
+			"landscape": false
+		},
+		{
+			"id": "unl-t08",
+			"set": "UNL",
+			"num": 8,
+			"variant": "token",
+			"name": "XP Tracker",
+			"type": "Card",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
 			"landscape": false
 		},
 		{
@@ -15339,6 +18978,18 @@
 			"landscape": false
 		},
 		{
+			"id": "ven-t01",
+			"set": "VEN",
+			"num": 1,
+			"variant": "token",
+			"name": "Empowered",
+			"type": "Card",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": false
+		},
+		{
 			"id": "ven-002-166",
 			"set": "VEN",
 			"num": 2,
@@ -15507,6 +19158,18 @@
 			"landscape": false
 		},
 		{
+			"id": "ven-t05",
+			"set": "VEN",
+			"num": 5,
+			"variant": "token",
+			"name": "Shadow Clone",
+			"type": "Unit",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
+			"landscape": false
+		},
+		{
 			"id": "ven-006-166",
 			"set": "VEN",
 			"num": 6,
@@ -15546,6 +19209,18 @@
 			"domains": [
 				"Order"
 			],
+			"landscape": false
+		},
+		{
+			"id": "ven-t06",
+			"set": "VEN",
+			"num": 6,
+			"variant": "token",
+			"name": "Tentacle",
+			"type": "Unit",
+			"supertype": "Token",
+			"rarity": "Common",
+			"domains": [],
 			"landscape": false
 		},
 		{
@@ -16089,6 +19764,20 @@
 			"type": "Unit",
 			"supertype": "Champion",
 			"rarity": "Rare",
+			"domains": [
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
+			"id": "ven-041a",
+			"set": "VEN",
+			"num": 41,
+			"variant": "promo",
+			"name": "Riven, Shattered",
+			"type": "Unit",
+			"supertype": "Champion",
+			"rarity": "Showcase",
 			"domains": [
 				"Calm"
 			],
@@ -18382,6 +22071,21 @@
 			"landscape": false
 		},
 		{
+			"id": "ven-189*",
+			"set": "VEN",
+			"num": 189,
+			"variant": "signature",
+			"name": "Akali, Rogue Assassin",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Fury",
+				"Calm"
+			],
+			"landscape": false
+		},
+		{
 			"id": "ven-190-166",
 			"set": "VEN",
 			"num": 190,
@@ -18397,6 +22101,21 @@
 			"landscape": false
 		},
 		{
+			"id": "ven-190*",
+			"set": "VEN",
+			"num": 190,
+			"variant": "signature",
+			"name": "Renekton, Butcher of the Sands",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Body",
+				"Fury"
+			],
+			"landscape": false
+		},
+		{
 			"id": "ven-191-166",
 			"set": "VEN",
 			"num": 191,
@@ -18405,6 +22124,21 @@
 			"type": "Legend",
 			"supertype": null,
 			"rarity": "Rare",
+			"domains": [
+				"Fury",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "ven-191*",
+			"set": "VEN",
+			"num": 191,
+			"variant": "signature",
+			"name": "Zed, Master of Shadows",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
 			"domains": [
 				"Fury",
 				"Chaos"
@@ -18427,6 +22161,21 @@
 			"landscape": false
 		},
 		{
+			"id": "ven-192*",
+			"set": "VEN",
+			"num": 192,
+			"variant": "signature",
+			"name": "Nasus, Curator of the Sands",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Calm",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
 			"id": "ven-193-166",
 			"set": "VEN",
 			"num": 193,
@@ -18435,6 +22184,21 @@
 			"type": "Legend",
 			"supertype": null,
 			"rarity": "Rare",
+			"domains": [
+				"Calm",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
+			"id": "ven-193*",
+			"set": "VEN",
+			"num": 193,
+			"variant": "signature",
+			"name": "Shen, Eye of Twilight",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
 			"domains": [
 				"Calm",
 				"Order"
@@ -18457,6 +22221,21 @@
 			"landscape": false
 		},
 		{
+			"id": "ven-194*",
+			"set": "VEN",
+			"num": 194,
+			"variant": "signature",
+			"name": "Jayce, Defender of Tomorrow",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Body",
+				"Mind"
+			],
+			"landscape": false
+		},
+		{
 			"id": "ven-195-166",
 			"set": "VEN",
 			"num": 195,
@@ -18465,6 +22244,21 @@
 			"type": "Legend",
 			"supertype": null,
 			"rarity": "Rare",
+			"domains": [
+				"Mind",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "ven-195*",
+			"set": "VEN",
+			"num": 195,
+			"variant": "signature",
+			"name": "Mel, Soul's Reflection",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
 			"domains": [
 				"Mind",
 				"Chaos"
@@ -18487,6 +22281,21 @@
 			"landscape": false
 		},
 		{
+			"id": "ven-196*",
+			"set": "VEN",
+			"num": 196,
+			"variant": "signature",
+			"name": "Ambessa, Matriarch of War",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
+			"domains": [
+				"Body",
+				"Order"
+			],
+			"landscape": false
+		},
+		{
 			"id": "ven-197-166",
 			"set": "VEN",
 			"num": 197,
@@ -18495,6 +22304,21 @@
 			"type": "Legend",
 			"supertype": null,
 			"rarity": "Rare",
+			"domains": [
+				"Order",
+				"Chaos"
+			],
+			"landscape": false
+		},
+		{
+			"id": "ven-197*",
+			"set": "VEN",
+			"num": 197,
+			"variant": "signature",
+			"name": "Kennen, Heart of the Tempest",
+			"type": "Legend",
+			"supertype": null,
+			"rarity": "Showcase",
 			"domains": [
 				"Order",
 				"Chaos"

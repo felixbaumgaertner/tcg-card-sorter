@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildCards, cleanName, dedupe, variantOf } from './card-transform.mjs';
+import { buildCards, cleanName, dedupe, variantOf, addPiltover, piltoverToCard, splitVariantNumber } from './card-transform.mjs';
 
 const entry = (over = {}) => ({
 	riftbound_id: 'ven-095-166',
@@ -60,5 +60,64 @@ describe('buildCards', () => {
 			id: 'ven-095-166', set: 'VEN', num: 95, variant: 'normal', name: 'Shadow Order Disciple',
 			type: 'Unit', supertype: null, rarity: 'Common', domains: ['Chaos'], landscape: false
 		});
+	});
+});
+
+describe('Piltover Archive', () => {
+	const row = (variantNumber, variantType, name = 'Some Card', type = 'Unit') => ({
+		variantNumber,
+		variantType,
+		rarity: 'Common',
+		set: { prefix: variantNumber.split('-')[0], name: 'Radiance', releaseDate: '2026-10-23' },
+		card: { name, type, super: null, colors: [{ name: 'Fury' }] }
+	});
+
+	it('splits plain numbers and refuses numbers with notes', () => {
+		expect(splitVariantNumber('RAD-091a')).toEqual({ set: 'RAD', number: '091a' });
+		expect(splitVariantNumber('UNL-R05a')).toEqual({ set: 'UNL', number: 'R05a' });
+		expect(splitVariantNumber('RAD-157-Prize')).toBeNull();
+	});
+
+	it.each([
+		['RAD-128', 'Standard', 'normal'],
+		['RAD-091a', 'Alt Art', 'alt'],
+		['RAD-SP3', 'Alt Art', 'special'],
+		['UNL-R05a', 'Alt Art', 'rune'],
+		['RAD-T01', 'Standard', 'token'],
+		['RAD-168*', 'Overnumbered', 'signature'],
+		['RAD-175', 'Overnumbered', 'overnumbered'],
+		['RAD-021b', 'Promo', 'promo']
+	])('%s (%s) is %s', (number, type, variant) => {
+		expect(piltoverToCard(row(number, type)).variant).toBe(variant);
+	});
+
+	it('shapes a card', () => {
+		expect(piltoverToCard(row('RAD-159', 'Standard', 'Black Rose Sanctum', 'Battlefield'))).toEqual({
+			id: 'rad-159',
+			set: 'RAD',
+			num: 159,
+			variant: 'normal',
+			name: 'Black Rose Sanctum',
+			type: 'Battlefield',
+			supertype: null,
+			rarity: 'Common',
+			domains: ['Fury'],
+			landscape: true
+		});
+	});
+
+	it('adds only what is missing, and the set it needs', () => {
+		const base = {
+			sets: [{ id: 'VEN', name: 'Vendetta', published: '2026-07-31' }],
+			cards: [{ id: 'ven-088a-166', set: 'VEN', num: 88 }]
+		};
+		const out = addPiltover(base, [
+			row('VEN-088a', 'Alt Art'),
+			row('RAD-128', 'Standard'),
+			row('RAD-157-Prize', 'Promo')
+		]);
+		expect(out.added).toBe(1);
+		expect(out.cards.map((c) => c.id)).toEqual(['rad-128', 'ven-088a-166']);
+		expect(out.sets.map((s) => s.id)).toEqual(['VEN', 'RAD']);
 	});
 });

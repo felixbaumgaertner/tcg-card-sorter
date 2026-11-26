@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { asset } from '$app/paths';
-	import { cardById } from '../../lib/cards';
+	import { cardByPrint } from '../../lib/cards';
 	import { parsePrintedCode, type PrintedCode } from '../../lib/code';
 	import { parseDictionary, readPicture, type Line, type Model, type Models } from '../../lib/reader/reader';
 
@@ -149,7 +149,7 @@
 			height,
 			lines: found.lines,
 			code,
-			cardName: code ? (cardById(code.id)?.name ?? null) : null
+			cardName: code ? (cardByPrint(code.set, code.number, code.total)?.name ?? null) : null
 		};
 	}
 

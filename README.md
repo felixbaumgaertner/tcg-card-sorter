@@ -37,7 +37,7 @@ npm run dev      # start the app locally
 npm test         # unit tests
 npm run check    # type check
 npm run build    # static files in app/build
-npm run cards    # refresh the built-in card list from Riftcodex
+npm run cards    # refresh the built-in card list
 ```
 
 ## Reader test page
@@ -50,6 +50,8 @@ On 11 hand-held test photos it read 11 of 11 codes on a laptop; Tesseract.js rea
 
 The card list (names, numbers, sets, domains; text only, no images) comes from the
 [Riftcodex](https://riftcodex.com) API and is stored in `app/src/lib/data/cards.json`.
+Printings Riftcodex does not have yet (the newest set, some runes and tokens) are filled in from
+[Piltover Archive](https://piltoverarchive.com)'s public card catalogue.
 
 ## License
 

@@ -23,9 +23,8 @@ const CODE =
 /**
  * Set codes that can be printed on a card. Text read upside down sometimes looks like a code
  * ("ZIN SS7"), so anything with another set code is thrown away.
- * RAD (Radiance) is not in the card list yet.
  */
-export const knownSets: ReadonlySet<string> = new Set([...sets.map((s) => s.id), 'RAD']);
+export const knownSets: ReadonlySet<string> = new Set(sets.map((s) => s.id));
 
 export function parsePrintedCode(text: string): PrintedCode | null {
 	// The slash is sometimes read as a 7 ("0257298" for "025/298"). Seven digits in a row can only
