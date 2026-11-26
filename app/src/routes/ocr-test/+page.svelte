@@ -24,7 +24,6 @@
 	let reader: Reader | null = null;
 	let status = $state('Not loaded yet. Pick a photo to start.');
 	let loadMs = $state<number | null>(null);
-	let lowerHalf = $state(true);
 	let busy = $state(false);
 	let results = $state<Result[]>([]);
 	let error = $state<string | null>(null);
@@ -48,27 +47,26 @@
 	}
 
 	/**
-	 * Draws the photo onto a canvas, turned by `turns` quarter turns, and returns it as an image
-	 * address. Upright photos can be cut to their lower half; turned ones are always read whole.
+	 * Draws the whole photo onto a canvas, turned by `turns` quarter turns, and returns it as an
+	 * image address.
 	 */
 	async function prepare(file: File, turns: number) {
 		const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
 		const sideways = turns % 2 === 1;
 		const width = sideways ? bitmap.height : bitmap.width;
-		const fullHeight = sideways ? bitmap.width : bitmap.height;
-		const top = turns === 0 && lowerHalf ? Math.round(fullHeight / 2) : 0;
+		const height = sideways ? bitmap.width : bitmap.height;
 		const canvas = document.createElement('canvas');
 		canvas.width = width;
-		canvas.height = fullHeight - top;
+		canvas.height = height;
 		const ctx = canvas.getContext('2d')!;
-		ctx.translate(width / 2, fullHeight / 2 - top);
+		ctx.translate(width / 2, height / 2);
 		ctx.rotate((turns * Math.PI) / 2);
 		ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2);
 		bitmap.close();
-		return { url: canvas.toDataURL('image/png'), width: canvas.width, height: canvas.height };
+		return { url: canvas.toDataURL('image/png'), width, height };
 	}
 
-	/** Reads upright first. Battlefields are printed sideways, so other directions are tried after. */
+	/** A card can lie any way round, so the photo is read as taken first and then turned. */
 	async function read(r: Reader, file: File): Promise<Result> {
 		const t0 = performance.now();
 		let first: Omit<Result, 'ms'> | null = null;
@@ -115,14 +113,9 @@
 <main>
 	<h1>Reader test</h1>
 	<p>
-		Take a photo of one card (flash on, about 11 cm away). The page reads the code in the bottom
-		left corner and shows how long that took. Nothing leaves this device.
+		Take a photo of one card (flash on, about 11 cm away). The card can lie any way round. The page
+		reads its printed code and shows how long that took. Nothing leaves this device.
 	</p>
-
-	<label class="check">
-		<input type="checkbox" bind:checked={lowerHalf} disabled={busy} />
-		Only read the lower half of the photo (faster)
-	</label>
 
 	<label class="pick" class:busy>
 		{busy ? 'Working…' : 'Take or pick photos'}
@@ -163,10 +156,6 @@
 		padding: 1.5rem 1rem;
 		font-family: system-ui, sans-serif;
 		line-height: 1.5;
-	}
-	.check {
-		display: block;
-		margin: 1rem 0;
 	}
 	.pick {
 		display: block;
