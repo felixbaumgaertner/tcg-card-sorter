@@ -1,0 +1,270 @@
+<title>Card Sorter Model</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: workshop sheet — one large 3D viewport with view controls, then the parts table and the phone dock sheet below. */
+:root {
+  --bg: #eef1f3; --panel: #ffffff; --ink: #1b2430; --muted: #5b6673; --line: #cfd6dd;
+  --accent: #1f7a8c; --accent-soft: #d6ecf0; --stage: #dfe5ea;
+  --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #12171d; --panel: #1a2129; --ink: #dce3ea; --muted: #94a0ad; --line: #2e3842; --accent: #56b8cb; --accent-soft: #173a42; --stage: #222b35; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #12171d; --panel: #1a2129; --ink: #dce3ea; --muted: #94a0ad; --line: #2e3842; --accent: #56b8cb; --accent-soft: #173a42; --stage: #222b35; color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2rem 3rem; }
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 2rem; }
+header { display: grid; gap: .5rem; max-width: 68ch; }
+.eyebrow { font-family: var(--mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--display); font-size: 1.4rem; margin: 0; }
+p { margin: 0; } .lead { color: var(--muted); }
+section { display: grid; gap: 1rem; }
+.stage { position: relative; background: var(--stage); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+#view { display: block; width: 100%; height: min(70vh, 600px); min-height: 340px; touch-action: none; cursor: grab; }
+#fallback { padding: 2rem; color: var(--muted); }
+.bar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.bar .sep { width: 1px; align-self: stretch; background: var(--line); margin-inline: .25rem; }
+button { font: 500 .8rem var(--mono); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .45rem .7rem; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.hint { font-size: .82rem; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; font-size: .82rem; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.legend i { width: .8rem; height: .8rem; border-radius: 2px; display: inline-block; border: 1px solid var(--line); }
+.tw { overflow-x: auto; }
+table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: .9rem; background: var(--panel); border: 1px solid var(--line); }
+th, td { text-align: left; vertical-align: top; padding: .55rem .75rem; border-bottom: 1px solid var(--line); }
+thead th { font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.note { background: var(--accent-soft); border-radius: 10px; padding: 1rem 1.1rem; display: grid; gap: .4rem; max-width: 80ch; }
+.note strong { font-family: var(--display); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; align-items: start; }
+figure { margin: 0; } figure svg { width: 100%; height: auto; display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+figcaption { font-size: .85rem; color: var(--muted); margin-top: .4rem; }
+svg text { font-family: var(--mono); font-size: 11px; fill: currentColor; }
+ul { margin: 0; padding-left: 1.1rem; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">tcg-card-sorter · concept model v1</span>
+    <h1>Card sorter, spit-out design</h1>
+    <p class="lead">A model you can turn. All sizes are in millimetres and are a first guess to plan with. They are not print-ready. The measurements marked "measure" must be taken from your own phone and cards.</p>
+  </header>
+
+  <section>
+    <div class="bar" role="group" aria-label="View">
+      <button id="v-3d" data-view="3d" aria-pressed="true">3D</button>
+      <button id="v-top" data-view="top" aria-pressed="false">Top</button>
+      <button id="v-front" data-view="front" aria-pressed="false">Front</button>
+      <button id="v-side" data-view="side" aria-pressed="false">Side</button>
+      <span class="sep"></span>
+      <button id="t-phone" aria-pressed="true">Phone + shelf</button>
+      <button id="t-inside" aria-pressed="false">See inside</button>
+      <button id="t-eject" aria-pressed="false">Play a card</button>
+    </div>
+    <div class="stage">
+      <canvas id="view" aria-label="3D model of the card sorter"></canvas>
+      <div id="fallback" hidden>The 3D view could not start in this browser. The parts table below has all sizes.</div>
+    </div>
+    <p class="hint">Drag to turn, scroll or pinch to zoom, right-drag or two fingers to move.</p>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section>
+    <h2>Parts and sizes</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Part</th><th>Size (mm)</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Base plate</td><td class="n">230 × 300 × 4</td><td>Everything stands on it. Could be split in two for a small print bed.</td></tr>
+        <tr><td>Centre block</td><td class="n">75 × 95 × 30</td><td>Holds the two wheel motors. Its top slopes down on all four sides.</td></tr>
+        <tr><td>Platform (top of block)</td><td class="n">44 × 60, at 45 high</td><td>The card (63 × 88) rests here and hangs over on every side, so it tips off easily.</td></tr>
+        <tr><td>2 omni wheels</td><td class="n">⌀ 24 × 13</td><td>Poke 1.5 mm out of the platform. One drives left/right, one front/back.</td></tr>
+        <tr><td>Ball presser</td><td class="n">⌀ 10 ball on an arm</td><td>Presses the card onto the wheels. The arm hangs from a corner post and lifts up.</td></tr>
+        <tr><td>3 sort bins</td><td class="n">75 × 95 × 30 outside</td><td>Open boxes, lift out. Hold about 50 cards each (15 mm stack).</td></tr>
+        <tr><td>Reject drawer</td><td class="n">72 × 95 × 30</td><td>Under the feeder. Pulls out to the back.</td></tr>
+        <tr><td>Feeder hopper</td><td class="n">65 × 90 inside, 25 deep</td><td>Card stack + weight. Floor at 58 high, so cards drop 13 mm onto the platform.</td></tr>
+        <tr><td>Gate</td><td class="n">gap ≈ 0.45 (measure)</td><td>Front wall of the hopper on a screw. Lets one card (≈ 0.3) through.</td></tr>
+        <tr><td>Feed roller</td><td class="n">⌀ 16 × 30</td><td>Rubber O-rings on a printed roller, under the stack.</td></tr>
+        <tr><td>4 corner posts</td><td class="n">6 × 6 × 156</td><td>Carry the phone shelf. They also guide the card so it can't twist much.</td></tr>
+        <tr><td>Phone shelf</td><td class="n">88 × 170 × 3, at 156 high</td><td>Pocket for the Pixel 7a, with a slot for the camera bar and a hole for the lens.</td></tr>
+        <tr><td>Electronics bay</td><td class="n">front-left corner</td><td>ESP32 and two motor drivers. Free corners also leave room for cable runs.</td></tr>
+        <tr><td><b>Whole machine</b></td><td class="n"><b>230 × 300 × 170</b></td><td>Fits a normal backpack lying flat. The phone travels separately.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Dock for the Pixel 7a</h2>
+    <div class="two">
+      <figure>
+        <svg viewBox="0 0 340 250" role="img" aria-label="Top view of the phone shelf: the Pixel 7a lies screen up with its top end towards the front; the main lens sits over the middle of the platform, so the phone body reaches back over the feeder.">
+          <defs><marker id="pd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+          <rect x="20" y="60" width="190" height="100" rx="4" fill="none" stroke="currentColor" stroke-dasharray="4 3"/>
+          <rect x="34" y="73.5" width="152" height="73" rx="9" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="49" y="73.5" width="14" height="73" fill="currentColor" opacity=".15"/>
+          <circle cx="56" cy="92" r="6" style="fill:var(--accent)"/>
+          <rect x="24.5" y="48" width="63" height="88" fill="none" style="stroke:var(--accent)" stroke-dasharray="3 3"/>
+          <text x="110" y="114">Pixel 7a, screen up</text>
+          <text x="110" y="128">152 × 72.9 × 9</text>
+          <text x="20" y="40">card below</text>
+          <line x1="56" y1="182" x2="56" y2="102" stroke="currentColor" marker-end="url(#pd)"/>
+          <text x="20" y="196">main lens over the platform middle</text>
+          <text x="20" y="212">camera bar sits in a slot</text>
+          <line x1="230" y1="110" x2="300" y2="110" stroke="currentColor" marker-end="url(#pd)"/>
+          <text x="232" y="100">to the back</text>
+          <text x="232" y="128">(feeder)</text>
+          <text x="20" y="236">lens position on the phone: measure</text>
+        </svg>
+        <figcaption>Seen from above. The phone lies with its top end to the front, so its body rests over the feeder and not over a bin.</figcaption>
+      </figure>
+      <div>
+        <ul>
+          <li><b>Screen up, top end to the front.</b> The app turns its screen by 180° so you can read it from the front.</li>
+          <li><b>The camera bar sticks out about 1–2 mm.</b> The shelf gets a slot for it so the phone lies flat.</li>
+          <li><b>Make the pocket fit your case.</b> Measure the phone with the case on, and add 1 mm.</li>
+          <li><b>Height: 110 mm from card to lens.</b> At that distance the camera sees roughly 15 × 11 cm, and the small code on the card is about 40 pixels tall in a full photo. That should be enough to read. This is my estimate, and step 1 checks it.</li>
+          <li><b>The posts are a first guess at the height.</b> Print them last, after step 1 shows how close the 7a can focus.</li>
+          <li><b>The phone weighs 193 g.</b> That is why the shelf stands on four posts and doesn't hang on one arm.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note">
+      <strong>Still to measure on the real things</strong>
+      <p>Where the main lens sits on the back of the 7a (from the top edge and from the side). Card thickness, with ten cards stacked. Where exactly the code is printed on a Riftbound card. How close the 7a can focus.</p>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function () {
+  var canvas = document.getElementById('view');
+  var renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); }
+  catch (e) { canvas.hidden = true; document.getElementById('fallback').hidden = false; return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(35, 1, 10, 5000);
+  var controls = new THREE.OrbitControls(camera, canvas);
+  controls.target.set(0, 70, 0); controls.enableDamping = true;
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 0.85));
+  var sun = new THREE.DirectionalLight(0xffffff, 0.6); sun.position.set(300, 500, 400); scene.add(sun);
+
+  var C = { base: 0x8d99a6, bin: 0xc9d2da, block: 0x6f7d8c, feeder: 0xa9b6c2, post: 0x56616d, shelf: 0x56616d,
+            phone: 0x23282e, card: 0x1f9bb3, wheel: 0xe08a2e, motor: 0x3b4450, pcb: 0x2e8b57, ball: 0xf2f2f2, reject: 0xb7a3a0 };
+  var groups = { phone: new THREE.Group(), shell: [], all: new THREE.Group() };
+  scene.add(groups.all); groups.all.add(groups.phone);
+
+  // model coords: x right, y back, z up  ->  three: (x, z, -y)
+  function mat(c, o) { return new THREE.MeshLambertMaterial({ color: c, transparent: true, opacity: o == null ? 1 : o }); }
+  function box(x0, x1, y0, y1, z0, z1, c, parent, shell) {
+    var m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, z1 - z0, y1 - y0), mat(c));
+    m.position.set((x0 + x1) / 2, (z0 + z1) / 2, -(y0 + y1) / 2);
+    (parent || groups.all).add(m); if (shell) groups.shell.push(m); return m;
+  }
+  function cyl(r, len, axis, x, y, z, c, parent) {
+    var m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 28), mat(c));
+    if (axis === 'x') m.rotation.z = Math.PI / 2; if (axis === 'y') m.rotation.x = Math.PI / 2;
+    m.position.set(x, z, -y); (parent || groups.all).add(m); return m;
+  }
+  function openBin(x0, x1, y0, y1, c, fill) {
+    var t = 2, h = 30;
+    box(x0, x1, y0, y1, 0, t, c);
+    box(x0, x0 + t, y0, y1, t, h, c); box(x1 - t, x1, y0, y1, t, h, c);
+    box(x0 + t, x1 - t, y0, y0 + t, t, h, c); box(x0 + t, x1 - t, y1 - t, y1, t, h, c);
+    if (fill) box((x0 + x1) / 2 - 31.5, (x0 + x1) / 2 + 31.5, (y0 + y1) / 2 - 44, (y0 + y1) / 2 + 44, t, t + fill, C.card);
+  }
+
+  box(-115, 115, -148, 152, -4, 0, C.base);
+  openBin(-112.5, -37.5, -47.5, 47.5, C.bin, 6);
+  openBin(37.5, 112.5, -47.5, 47.5, C.bin, 9);
+  openBin(-37.5, 37.5, -142.5, -47.5, C.bin, 4);
+  openBin(-36, 36, 50, 145, C.reject, 2);
+
+  // centre block with sloped top (frustum 75x95 @30 -> 44x60 @45)
+  box(-37.5, 37.5, -47.5, 47.5, 0, 30, C.block, null, true);
+  (function () {
+    var b = [[-37.5, -47.5], [37.5, -47.5], [37.5, 47.5], [-37.5, 47.5]], t = [[-22, -30], [22, -30], [22, 30], [-22, 30]];
+    var v = [], i;
+    function p(q, z) { return [q[0], z, -q[1]]; }
+    function quad(a, b2, c, d) { [a, b2, c, a, c, d].forEach(function (k) { v.push(k[0], k[1], k[2]); }); }
+    for (i = 0; i < 4; i++) { var j = (i + 1) % 4; quad(p(b[i], 30), p(b[j], 30), p(t[j], 45), p(t[i], 45)); }
+    quad(p(t[0], 45), p(t[1], 45), p(t[2], 45), p(t[3], 45));
+    var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(v, 3)); g.computeVertexNormals();
+    var m = new THREE.Mesh(g, mat(C.block)); m.material.side = THREE.DoubleSide; groups.all.add(m); groups.shell.push(m);
+  })();
+  // wheels + motors
+  cyl(12, 13, 'y', 0, 12, 34.5, C.wheel);            // drives left/right
+  cyl(12, 13, 'x', 0, -15, 34.5, C.wheel);           // drives front/back
+  box(-34, -14, 7, 17, 24, 36, C.motor);             // motor for wheel 1
+  box(8, 28, -20, -10, 24, 36, C.motor);             // motor for wheel 2
+  // ball presser + arm
+  var ball = new THREE.Mesh(new THREE.SphereGeometry(5, 20, 14), mat(C.ball)); ball.position.set(0, 53, 2); groups.all.add(ball);
+  box(-1.5, 1.5, -2, 2, 58, 70, C.post); box(-1.5, 41, -2, 2, 70, 73, C.post); box(38, 41, -2, 51, 70, 73, C.post);
+  // corner posts
+  [[-44, -54], [38, -54], [-44, 48], [38, 48]].forEach(function (q) { box(q[0], q[0] + 6, q[1], q[1] + 6, 0, 156, C.post); });
+  // feeder: side walls, floor, hopper, gate, roller, motor, stack, weight
+  box(-41, -37.5, 54, 148, 0, 55, C.feeder, null, true); box(37.5, 41, 54, 148, 0, 55, C.feeder, null, true);
+  box(-41, 41, 54, 148, 55, 58, C.feeder, null, true);
+  box(-34.5, -32.5, 54, 148, 58, 83, C.feeder, null, true); box(32.5, 34.5, 54, 148, 58, 83, C.feeder, null, true);
+  box(-34.5, 34.5, 146, 148, 58, 83, C.feeder, null, true);
+  box(-34.5, 34.5, 54, 56, 58.6, 83, C.wheel);       // gate (adjustable)
+  cyl(8, 30, 'x', 0, 100, 51, C.wheel);
+  box(17, 37, 95, 105, 43, 55, C.motor);
+  box(-31.5, 31.5, 57, 145, 58, 73, C.card);
+  box(-25, 25, 75, 125, 73, 80, C.motor);
+  // electronics
+  box(-110, -82, -138, -83, 0, 5, C.pcb); box(-76, -58, -138, -118, 0, 4, C.pcb); box(-76, -58, -112, -92, 0, 4, C.pcb);
+  box(-30, -24, 31, 35, 45, 52, C.pcb);              // IR sensor
+  // phone shelf + Pixel 7a (lens at 0,0; top end to the front)
+  box(-52, 44, -40, 130, 156, 159, C.shelf, groups.phone);
+  var ph = box(-56.5, 16.4, -23, 129, 159.5, 168.5, C.phone, groups.phone);
+  box(-55, 15, -21, 127, 168.5, 168.8, 0x3d6a8a, groups.phone);
+  cyl(5, 3, 'z', 0, 0, 157.5, 0x111111, groups.phone);
+  // the travelling card
+  var card = box(-31.5, 31.5, -44, 44, 46.5, 46.8, C.card);
+  card.material = mat(0x35c4de);
+
+  // legend
+  var L = [['Card', 0x35c4de], ['Wheels, roller, gate', C.wheel], ['Motors, weight', C.motor], ['Bins', C.bin], ['Reject drawer', C.reject], ['Feeder', C.feeder], ['Posts, shelf', C.post], ['Phone', C.phone], ['Electronics', C.pcb]];
+  document.getElementById('legend').innerHTML = L.map(function (l) { return '<span><i style="background:#' + ('000000' + l[1].toString(16)).slice(-6) + '"></i>' + l[0] + '</span>'; }).join('');
+
+  // views
+  var views = { '3d': [230, 250, 330], top: [0, 520, 0.01], front: [0, 80, 500], side: [520, 80, 0] };
+  function setView(k) {
+    camera.position.set(views[k][0], views[k][1], views[k][2]); controls.target.set(0, k === 'top' ? 0 : 70, 0); controls.update();
+    document.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.view === k ? 'true' : 'false'); });
+  }
+  document.querySelectorAll('[data-view]').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.view); }); });
+  function toggle(id, fn) { var b = document.getElementById(id); b.addEventListener('click', function () { var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); fn(on); }); }
+  toggle('t-phone', function (on) { groups.phone.visible = on; });
+  toggle('t-inside', function (on) { groups.shell.forEach(function (m) { m.material.opacity = on ? 0.25 : 1; m.material.depthWrite = !on; }); });
+
+  // card animation: feeder -> platform -> pause -> one of four ways out
+  var playing = false, t0 = 0, dirIdx = 0, dirs = [[1, 0], [0, -1], [-1, 0], [0, 1]];
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  toggle('t-eject', function (on) { playing = on; t0 = performance.now(); if (!on) placeCard(0, 0, 46.65, 0, 0); });
+  function placeCard(x, y, z, tiltX, tiltY) { card.position.set(x, z, -y); card.rotation.set(tiltX, 0, tiltY); }
+  function animate(now) {
+    if (playing) {
+      var T = reduce ? 6000 : 3600, t = ((now - t0) % T) / T, d = dirs[Math.floor((now - t0) / T) % 4];
+      if (t < 0.25) { var a = t / 0.25; placeCard(0, 100 - 100 * a, a < 0.6 ? 58.5 : 58.5 - (a - 0.6) / 0.4 * 11.85, 0, 0); }
+      else if (t < 0.6) { placeCard(0, 0, 46.65, 0, 0); }
+      else {
+        var e = (t - 0.6) / 0.4, dist = e * 78, drop = e < 0.35 ? 0 : (e - 0.35) / 0.65 * 38, tilt = e < 0.35 ? 0 : Math.min((e - 0.35) * 2.2, 0.6) * (e > 0.85 ? (1 - e) / 0.15 : 1);
+        placeCard(d[0] * dist, d[1] * dist, 46.65 - drop, d[1] * tilt, -d[0] * tilt);
+      }
+    }
+    controls.update(); renderer.render(scene, camera); requestAnimationFrame(animate);
+  }
+  function resize() { var w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  window.addEventListener('resize', resize); resize(); setView('3d'); requestAnimationFrame(animate);
+})();
+</script>

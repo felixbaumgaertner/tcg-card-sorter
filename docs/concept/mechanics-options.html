@@ -1,0 +1,478 @@
+<title>Card Sorter Mechanics</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: a workshop sheet — two sections (feeder, router), each a grid of side-by-side option drawings drawn to the same scale. */
+:root {
+  --bg: #eef1f3;
+  --panel: #ffffff;
+  --ink: #1b2430;
+  --muted: #5b6673;
+  --line: #cfd6dd;
+  --accent: #1f7a8c;
+  --accent-soft: #d6ecf0;
+  --warn: #9a5b12;
+  --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171d; --panel: #1a2129; --ink: #dce3ea; --muted: #94a0ad; --line: #2e3842;
+    --accent: #56b8cb; --accent-soft: #173a42; --warn: #e0a25a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171d; --panel: #1a2129; --ink: #dce3ea; --muted: #94a0ad; --line: #2e3842;
+  --accent: #56b8cb; --accent-soft: #173a42; --warn: #e0a25a; color-scheme: dark;
+}
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 2rem 3rem;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 2.5rem; }
+header { display: grid; gap: .5rem; max-width: 68ch; }
+.eyebrow { font-family: var(--mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--display); font-size: 1.5rem; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--display); font-size: 1.1rem; margin: 0; }
+p { margin: 0; }
+.lead { color: var(--muted); }
+section { display: grid; gap: 1.25rem; }
+.section-head { display: grid; gap: .35rem; max-width: 68ch; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+.opt { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; display: grid; gap: .75rem; align-content: start; min-width: 0; }
+.opt.pick { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.opt-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem; }
+.tag { font-family: var(--mono); font-size: .72rem; letter-spacing: .04em; padding: .15rem .5rem; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.tag.pick { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.tag.alt { border-color: var(--accent); color: var(--accent); }
+figure { margin: 0; color: var(--ink); }
+figure svg { width: 100%; max-width: 100%; height: auto; display: block; background: var(--bg); border-radius: 6px; }
+figcaption { font-size: .85rem; color: var(--muted); margin-top: .4rem; }
+.pc { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; font-size: .88rem; }
+.pc ul { margin: .2rem 0 0; padding-left: 1.1rem; }
+.pc b { font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+@media (max-width: 420px) { .pc { grid-template-columns: 1fr; } }
+.note { background: var(--accent-soft); border-radius: 10px; padding: 1rem 1.1rem; display: grid; gap: .4rem; max-width: 80ch; }
+.note strong { font-family: var(--display); }
+svg text { font-family: var(--mono); font-size: 11px; fill: currentColor; }
+.cmp { width: 100%; min-width: 560px; border-collapse: collapse; font-size: .9rem; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.cmp th, .cmp td { text-align: left; vertical-align: top; padding: .6rem .75rem; border-bottom: 1px solid var(--line); }
+.cmp thead th { font-family: var(--display); font-size: 1rem; }
+.cmp tbody th { font-family: var(--mono); font-size: .75rem; font-weight: 500; letter-spacing: .04em; color: var(--muted); width: 22%; }
+.cmp tr:last-child th, .cmp tr:last-child td { border-bottom: 0; }
+svg .soft { fill: currentColor; opacity: .55; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">tcg-card-sorter · step 2 + 3 options</span>
+    <h1>How the sorter could move cards</h1>
+    <p class="lead">Every drawing is a side or top view of the same small machine: about 50 unsleeved cards (63 × 88 mm, ~0.3 mm thick), 5&nbsp;V over USB-C, backpack size. The card being moved is always drawn in colour.</p>
+  </header>
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Part 1</span>
+      <h2>Feeder: get exactly one card off the stack</h2>
+      <p class="lead">This is the part other builders struggle with most. The real question is how the machine stops the second card from coming along.</p>
+    </div>
+    <div class="grid">
+
+      <article class="opt pick">
+        <div class="opt-head"><h3>A · Bottom roller + gate</h3><span class="tag pick">first choice</span></div>
+        <figure>
+          <svg viewBox="0 0 320 180" role="img" aria-label="Side view: a rubber roller under the stack pulls the bottom card forward through a gap under a gate that is about one card high.">
+            <defs><marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <line x1="20" y1="120" x2="300" y2="120" stroke="currentColor" stroke-width="2"/>
+            <g fill="none" stroke="currentColor" stroke-width="1">
+              <rect x="60" y="80" width="120" height="4"/><rect x="60" y="84" width="120" height="4"/><rect x="60" y="88" width="120" height="4"/><rect x="60" y="92" width="120" height="4"/><rect x="60" y="96" width="120" height="4"/><rect x="60" y="100" width="120" height="4"/><rect x="60" y="104" width="120" height="4"/><rect x="60" y="108" width="120" height="4"/><rect x="60" y="112" width="120" height="4"/>
+            </g>
+            <rect x="140" y="116" width="120" height="4" style="fill:var(--accent)"/>
+            <rect x="92" y="60" width="56" height="18" fill="none" stroke="currentColor"/><text x="120" y="73" text-anchor="middle">weight</text>
+            <rect x="184" y="36" width="8" height="76" fill="currentColor" opacity=".8"/>
+            <text x="200" y="48">gate</text>
+            <line x1="215" y1="104" x2="194" y2="114" stroke="currentColor" marker-end="url(#aA)"/>
+            <text x="218" y="102">gap ≈ 1 card</text>
+            <circle cx="110" cy="131" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M96 146 A16 16 0 0 0 124 146" fill="none" stroke="currentColor" marker-end="url(#aA)"/>
+            <text x="110" y="168" text-anchor="middle">rubber roller (motor)</text>
+            <line x1="266" y1="118" x2="300" y2="118" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#aA)"/>
+            <text x="300" y="140" text-anchor="end">to camera</text>
+          </svg>
+          <figcaption>The roller grabs only the bottom card. The gate blocks the cards above it.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>One motor (stepper)</li><li>Gentle on cards</li><li>Card shufflers and dispensers work this way</li></ul></div>
+          <div><b>Bad</b><ul><li>The gap must be set finely, so it needs an adjusting screw</li><li>New, slippery cards can come along in pairs</li></ul></div>
+        </div>
+      </article>
+
+      <article class="opt">
+        <div class="opt-head"><h3>B · Top roller + spring</h3><span class="tag">printer style</span></div>
+        <figure>
+          <svg viewBox="0 0 320 180" role="img" aria-label="Side view: a spring pushes the stack up against a roller on top that pushes the top card out over the front wall.">
+            <defs><marker id="aB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <line x1="56" y1="130" x2="184" y2="130" stroke="currentColor" stroke-width="2"/>
+            <polyline points="120,130 110,136 130,142 110,148 130,154 110,160 120,166" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="60" y1="168" x2="180" y2="168" stroke="currentColor" stroke-width="2"/>
+            <text x="140" y="152">spring</text>
+            <g fill="none" stroke="currentColor" stroke-width="1">
+              <rect x="60" y="94" width="120" height="4"/><rect x="60" y="98" width="120" height="4"/><rect x="60" y="102" width="120" height="4"/><rect x="60" y="106" width="120" height="4"/><rect x="60" y="110" width="120" height="4"/><rect x="60" y="114" width="120" height="4"/><rect x="60" y="118" width="120" height="4"/><rect x="60" y="122" width="120" height="4"/><rect x="60" y="126" width="120" height="4"/>
+            </g>
+            <rect x="110" y="90" width="120" height="4" style="fill:var(--accent)"/>
+            <circle cx="140" cy="78" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M126 62 A16 16 0 0 1 154 62" fill="none" stroke="currentColor" marker-end="url(#aB)"/>
+            <text x="140" y="44" text-anchor="middle">roller (motor)</text>
+            <rect x="184" y="96" width="8" height="74" fill="currentColor" opacity=".8"/>
+            <text x="200" y="130">front wall</text>
+            <line x1="236" y1="92" x2="290" y2="92" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#aB)"/>
+            <text x="290" y="80" text-anchor="end">to camera</text>
+          </svg>
+          <figcaption>The top card is pushed out. A spring keeps the stack pressed against the roller.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>Well known from paper trays</li><li>Pressure stays even as the stack shrinks</li></ul></div>
+          <div><b>Bad</b><ul><li>Spring + moving floor = more parts</li><li>The machine gets taller</li><li>The spring must be very soft for 50 light cards</li></ul></div>
+        </div>
+      </article>
+
+      <article class="opt">
+        <div class="opt-head"><h3>C · Push blade</h3><span class="tag alt">backup choice</span></div>
+        <figure>
+          <svg viewBox="0 0 320 180" role="img" aria-label="Side view: a thin blade, thinner than one card, slides along the floor and pushes only the bottom card out under the gate.">
+            <defs><marker id="aC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <line x1="20" y1="120" x2="300" y2="120" stroke="currentColor" stroke-width="2"/>
+            <g fill="none" stroke="currentColor" stroke-width="1">
+              <rect x="70" y="80" width="120" height="4"/><rect x="70" y="84" width="120" height="4"/><rect x="70" y="88" width="120" height="4"/><rect x="70" y="92" width="120" height="4"/><rect x="70" y="96" width="120" height="4"/><rect x="70" y="100" width="120" height="4"/><rect x="70" y="104" width="120" height="4"/><rect x="70" y="108" width="120" height="4"/><rect x="70" y="112" width="120" height="4"/>
+            </g>
+            <rect x="130" y="116" width="120" height="4" style="fill:var(--accent)"/>
+            <rect x="96" y="117" width="34" height="3" fill="currentColor"/>
+            <rect x="194" y="36" width="8" height="76" fill="currentColor" opacity=".8"/>
+            <text x="210" y="48">gate</text>
+            <line x1="96" y1="118" x2="52" y2="150" stroke="currentColor" stroke-width="2"/>
+            <circle cx="44" cy="156" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="60" y="172">servo + arm</text>
+            <line x1="80" y1="140" x2="105" y2="122" stroke="currentColor" marker-end="url(#aC)"/>
+            <text x="20" y="40">blade thinner</text><text x="20" y="54">than 1 card</text>
+            <line x1="60" y1="60" x2="106" y2="114" stroke="currentColor" stroke-dasharray="3 3"/>
+            <line x1="256" y1="118" x2="300" y2="118" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#aC)"/>
+          </svg>
+          <figcaption>The blade catches only the back edge of the bottom card. Two cards can't come out at once.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>Best at stopping double feeds</li><li>One servo, no rubber that wears out</li></ul></div>
+          <div><b>Bad</b><ul><li>The blade must be metal (a feeler gauge or steel strip). Printed plastic can't be that thin</li><li>Bent cards slip over the blade</li><li>Can scuff the card edge</li></ul></div>
+        </div>
+      </article>
+
+      <article class="opt">
+        <div class="opt-head"><h3>D · Suction cup</h3><span class="tag">skip for v1</span></div>
+        <figure>
+          <svg viewBox="0 0 320 180" role="img" aria-label="Side view: a suction cup on an arm lifts the top card; a hose leads to a small pump.">
+            <defs><marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <line x1="20" y1="140" x2="300" y2="140" stroke="currentColor" stroke-width="2"/>
+            <g fill="none" stroke="currentColor" stroke-width="1">
+              <rect x="60" y="104" width="120" height="4"/><rect x="60" y="108" width="120" height="4"/><rect x="60" y="112" width="120" height="4"/><rect x="60" y="116" width="120" height="4"/><rect x="60" y="120" width="120" height="4"/><rect x="60" y="124" width="120" height="4"/><rect x="60" y="128" width="120" height="4"/><rect x="60" y="132" width="120" height="4"/><rect x="60" y="136" width="120" height="4"/>
+            </g>
+            <rect x="60" y="88" width="120" height="4" style="fill:var(--accent)" transform="rotate(-4 120 90)"/>
+            <path d="M108 86 L132 86 L126 76 L114 76 Z" fill="currentColor" opacity=".8"/>
+            <line x1="120" y1="76" x2="120" y2="40" stroke="currentColor" stroke-width="2"/>
+            <path d="M120 40 C 160 20, 210 20, 236 34" fill="none" stroke="currentColor" stroke-dasharray="4 3"/>
+            <rect x="236" y="26" width="52" height="26" fill="none" stroke="currentColor"/><text x="262" y="43" text-anchor="middle">pump</text>
+            <text x="140" y="70">suction cup</text>
+            <line x1="104" y1="56" x2="104" y2="80" stroke="currentColor" marker-start="url(#aD)" marker-end="url(#aD)"/>
+          </svg>
+          <figcaption>The top card is lifted by air. A second motion is needed to move it on.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>Very good at separating sticky new cards</li></ul></div>
+          <div><b>Bad</b><ul><li>Pump + valve + lift arm = three extra parts</li><li>Loud, and pumps draw a lot of power for 5 V</li><li>Too big for a backpack</li></ul></div>
+        </div>
+      </article>
+    </div>
+    <div class="note">
+      <strong>Recommendation for the feeder</strong>
+      <p>Print <b>A</b> as a quick test rig first. If it lets cards through in pairs, add a small rubber pad above the gap, which is how paper printers stop double feeds. Only switch to <b>C</b> if that still fails. The check stays the same: 200 cards, no doubles, no jams.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Part 2</span>
+      <h2>Router: send the card to the right bin</h2>
+      <p class="lead">Every option needs one thing first: the card has to lie still under the phone for the photo. A small stop gate (one servo) holds it there and then lets it go.</p>
+    </div>
+    <div class="grid">
+
+      <article class="opt pick">
+        <div class="opt-head"><h3>1 · Swinging chute</h3><span class="tag pick">first choice</span></div>
+        <figure>
+          <svg viewBox="0 0 320 180" role="img" aria-label="Top view: a chute turns on a servo under the drop point and points at one of four bins laid out in a fan.">
+            <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <line x1="160" y1="30" x2="60" y2="128" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>
+            <line x1="160" y1="30" x2="200" y2="128" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>
+            <line x1="160" y1="30" x2="264" y2="128" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>
+            <line x1="160" y1="30" x2="128" y2="122" style="stroke:var(--accent)" stroke-width="24" stroke-linecap="round" opacity=".35"/>
+            <line x1="160" y1="30" x2="128" y2="122" style="stroke:var(--accent)" stroke-width="2"/>
+            <circle cx="160" cy="30" r="9" style="fill:var(--bg)" stroke="currentColor" stroke-width="2"/>
+            <text x="176" y="24">servo</text>
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="36" y="132" width="48" height="36"/><rect x="102" y="132" width="48" height="36"/><rect x="170" y="132" width="48" height="36"/><rect x="236" y="132" width="48" height="36"/>
+            </g>
+            <text x="60" y="155" text-anchor="middle">1</text><text x="126" y="155" text-anchor="middle">2</text><text x="194" y="155" text-anchor="middle">3</text><text x="260" y="155" text-anchor="middle">R</text>
+            <path d="M110 64 A60 60 0 0 1 210 64" fill="none" stroke="currentColor" marker-start="url(#a1)" marker-end="url(#a1)"/>
+            <text x="20" y="20" class="soft">top view</text>
+          </svg>
+          <figcaption>The card drops into the chute, and the chute points at one bin. R = reject bin.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>Simplest to print and fix</li><li>One servo for 3–5 bins</li><li>Easy to see what's going wrong</li></ul></div>
+          <div><b>Bad</b><ul><li>Bins sit in a fan, so it's wide</li><li>Cards must slide well, so the chute needs to be steep and smooth (PTFE tape)</li></ul></div>
+        </div>
+      </article>
+
+      <article class="opt">
+        <div class="opt-head"><h3>2 · Lift with drawers</h3><span class="tag alt">if 1 is too wide</span></div>
+        <figure>
+          <svg viewBox="0 0 320 180" role="img" aria-label="Side view: four drawers are stacked; a stepper on a screw moves the stack up or down so the chosen drawer lines up with the card exit.">
+            <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <line x1="40" y1="98" x2="180" y2="98" stroke="currentColor" stroke-width="2"/>
+            <rect x="60" y="94" width="110" height="4" style="fill:var(--accent)"/>
+            <line x1="172" y1="96" x2="208" y2="96" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#a2)"/>
+            <text x="40" y="88">card exit (fixed height)</text>
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="212" y="40" width="80" height="26"/><rect x="212" y="66" width="80" height="26"/><rect x="212" y="92" width="80" height="26" style="stroke:var(--accent)" stroke-width="2.5"/><rect x="212" y="118" width="80" height="26"/>
+            </g>
+            <text x="252" y="57" text-anchor="middle">1</text><text x="252" y="83" text-anchor="middle">2</text><text x="252" y="109" text-anchor="middle">3</text><text x="252" y="135" text-anchor="middle">R</text>
+            <line x1="304" y1="30" x2="304" y2="160" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/>
+            <rect x="294" y="160" width="20" height="14" fill="currentColor" opacity=".8"/>
+            <text x="290" y="172" text-anchor="end">stepper + screw</text>
+            <line x1="196" y1="50" x2="196" y2="80" stroke="currentColor" marker-start="url(#a2)" marker-end="url(#a2)"/>
+          </svg>
+          <figcaption>The drawers move up and down, and the card always leaves at the same height.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>Smallest footprint, so it fits a backpack best</li><li>Drawers are easy to empty</li></ul></div>
+          <div><b>Bad</b><ul><li>A lead screw, a guide and the stack weight make it harder to build</li><li>Taller machine</li></ul></div>
+        </div>
+      </article>
+
+      <article class="opt">
+        <div class="opt-head"><h3>3 · Turning ring of bins</h3><span class="tag">bulky</span></div>
+        <figure>
+          <svg viewBox="0 0 320 180" role="img" aria-label="Top view: a ring of four bins turns under a fixed drop point; a stepper sits in the middle.">
+            <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <circle cx="160" cy="96" r="70" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="160" cy="96" r="18" fill="currentColor" opacity=".8"/>
+            <g stroke="currentColor" stroke-width="1.5">
+              <line x1="172.7" y1="83.3" x2="209.5" y2="46.5"/><line x1="147.3" y1="83.3" x2="110.5" y2="46.5"/><line x1="147.3" y1="108.7" x2="110.5" y2="145.5"/><line x1="172.7" y1="108.7" x2="209.5" y2="145.5"/>
+            </g>
+            <text x="160" y="50" text-anchor="middle">1</text><text x="210" y="100" text-anchor="middle">2</text><text x="160" y="152" text-anchor="middle">3</text><text x="110" y="100" text-anchor="middle">R</text>
+            <rect x="146" y="30" width="28" height="12" style="fill:var(--accent)" opacity=".9"/>
+            <text x="186" y="22">card drops here</text>
+            <path d="M234 70 A78 78 0 0 1 234 122" fill="none" stroke="currentColor" marker-end="url(#a3)"/>
+            <text x="20" y="20" class="soft">top view</text>
+          </svg>
+          <figcaption>The drop point stays still, and the bins turn under it.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>One stepper, no sliding of the card</li><li>Adding bins is easy</li></ul></div>
+          <div><b>Bad</b><ul><li>Round, so the card-sized bins waste a lot of space</li><li>Bulky in a backpack</li></ul></div>
+        </div>
+      </article>
+
+      <article class="opt">
+        <div class="opt-head"><h3>4 · Flaps along a ramp</h3><span class="tag">long</span></div>
+        <figure>
+          <svg viewBox="0 0 320 180" role="img" aria-label="Side view: a card slides down a ramp; one of several flaps in the ramp floor opens and the card falls through into the bin below.">
+            <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <polyline points="30,50 140,83.8" fill="none" stroke="currentColor" stroke-width="2"/>
+            <polyline points="170,93 290,130" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="140" y1="83.8" x2="146" y2="114" stroke="currentColor" stroke-width="3"/>
+            <text x="150" y="70">open flap (servo)</text>
+            <line x1="70" y1="56" x2="100" y2="65.3" stroke="currentColor" stroke-width="4" opacity=".55"/>
+            <line x1="200" y1="96.2" x2="230" y2="105.4" stroke="currentColor" stroke-width="4" opacity=".55"/>
+            <line x1="50" y1="52" x2="100" y2="67.4" style="stroke:var(--accent)" stroke-width="3"/>
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="64" y="140" width="44" height="32"/><rect x="132" y="140" width="44" height="32" style="stroke:var(--accent)" stroke-width="2.5"/><rect x="200" y="140" width="44" height="32"/><rect x="262" y="140" width="44" height="32"/>
+            </g>
+            <text x="86" y="161" text-anchor="middle">1</text><text x="154" y="161" text-anchor="middle">2</text><text x="222" y="161" text-anchor="middle">3</text><text x="284" y="161" text-anchor="middle">R</text>
+            <line x1="152" y1="104" x2="154" y2="134" style="stroke:var(--accent)" marker-end="url(#a4)"/>
+          </svg>
+          <figcaption>The card slides along until an open flap drops it into its bin.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>Very easy to understand and debug</li><li>Fast</li></ul></div>
+          <div><b>Bad</b><ul><li>One servo per bin</li><li>The ramp makes it long: 4 bins ≈ 40 cm</li><li>Wrong shape for a backpack</li></ul></div>
+        </div>
+      </article>
+    </div>
+    <div class="note">
+      <strong>Recommendation for the router</strong>
+      <p>Start with <b>1 · Swinging chute</b>. It's the simplest to get working. Build the cardboard mock-up in step 3 with 4 bins in a fan. If that's too wide for your backpack, switch to <b>2 · Lift with drawers</b>, which is smaller but harder to build.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Part 3</span>
+      <h2>Swinging chute vs. turning ring, in detail</h2>
+      <p class="lead">Both use one motor and 4 bins (3 + reject). The real differences are how the card travels, how big the machine gets, and whether the motor knows where it is.</p>
+    </div>
+    <figure>
+      <svg viewBox="0 0 720 330" role="img" aria-label="Top view drawn to scale, 1 unit = 1 mm: the swinging chute needs about 30 by 24 cm because the bins sit in a row beside the scan tray; the turning ring needs about 27 cm round because the scan tray sits right above one bin.">
+        <defs><marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+        <text x="40" y="16">1 · swinging chute</text>
+        <rect x="155" y="25" width="70" height="95" fill="none" stroke="currentColor" stroke-dasharray="4 3"/>
+        <text x="190" y="76" text-anchor="middle" class="soft">scan</text>
+        <line x1="190" y1="120" x2="77.5" y2="200" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>
+        <line x1="190" y1="120" x2="227.5" y2="200" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>
+        <line x1="190" y1="120" x2="302.5" y2="200" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>
+        <line x1="190" y1="120" x2="152.5" y2="200" style="stroke:var(--accent)" stroke-width="20" stroke-linecap="round" opacity=".35"/>
+        <circle cx="190" cy="120" r="7" style="fill:var(--bg)" stroke="currentColor" stroke-width="2"/>
+        <g fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="40" y="170" width="75" height="95"/><rect x="115" y="170" width="75" height="95"/><rect x="190" y="170" width="75" height="95"/><rect x="265" y="170" width="75" height="95"/>
+        </g>
+        <text x="77.5" y="240" text-anchor="middle">1</text><text x="152.5" y="240" text-anchor="middle">2</text><text x="227.5" y="240" text-anchor="middle">3</text><text x="302.5" y="240" text-anchor="middle">R</text>
+        <line x1="40" y1="290" x2="340" y2="290" stroke="currentColor" marker-start="url(#a5)" marker-end="url(#a5)"/>
+        <text x="190" y="308" text-anchor="middle">≈ 30 cm</text>
+        <line x1="362" y1="25" x2="362" y2="265" stroke="currentColor" marker-start="url(#a5)" marker-end="url(#a5)"/>
+        <text x="370" y="150">≈ 24 cm</text>
+
+        <text x="420" y="16">3 · turning ring</text>
+        <circle cx="540" cy="160" r="135" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <g fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="445" y="65" width="95" height="95"/><rect x="540" y="65" width="95" height="95"/><rect x="445" y="160" width="95" height="95"/><rect x="540" y="160" width="95" height="95"/>
+        </g>
+        <rect x="457.5" y="65" width="70" height="95" style="fill:var(--accent)" opacity=".3"/>
+        <rect x="457.5" y="65" width="70" height="95" fill="none" stroke="currentColor" stroke-dasharray="4 3"/>
+        <text x="492.5" y="104" text-anchor="middle">1</text><text x="492.5" y="120" text-anchor="middle" class="soft">scan above</text>
+        <text x="587.5" y="116" text-anchor="middle">2</text><text x="587.5" y="211" text-anchor="middle">3</text><text x="492.5" y="211" text-anchor="middle">R</text>
+        <circle cx="540" cy="160" r="8" fill="currentColor" opacity=".8"/>
+        <path d="M660 110 A135 135 0 0 1 660 210" fill="none" stroke="currentColor" marker-end="url(#a5)"/>
+        <line x1="405" y1="318" x2="675" y2="318" stroke="currentColor" marker-start="url(#a5)" marker-end="url(#a5)"/>
+        <text x="540" y="310" text-anchor="middle">≈ 27 cm round</text>
+      </svg>
+      <figcaption>Top view, drawn to scale (1 unit = 1 mm). Bins are 75 × 95 mm in the chute version and 95 × 95 mm in the ring, which must be square because the card lands in each bin turned by 90°. The feeder sits behind the scan area in both and adds the same depth, so it is left out.</figcaption>
+    </figure>
+    <div style="overflow-x:auto">
+      <table class="cmp">
+        <thead><tr><th></th><th>1 · Swinging chute</th><th>3 · Turning ring</th></tr></thead>
+        <tbody>
+          <tr><th>How the card travels</th><td>It <b>slides</b> down a chute at 35–45°, then drops into the bin.</td><td>It <b>drops</b> 2–4 cm straight down into the bin under it. No sliding.</td></tr>
+          <tr><th>Motor</th><td>1 servo (MG90S)</td><td>1 stepper (28BYJ-48) + a bearing for the turntable</td></tr>
+          <tr><th>Does it know where it is?</th><td><b>Yes.</b> A servo goes to an angle you give it.</td><td><b>No.</b> At start it must find "home", so it needs a second sensor (hall sensor + magnet, ~€1).</td></tr>
+          <tr><th>Footprint</th><td>≈ 30 × 24 cm</td><td>≈ 27 cm round (scan sits inside it)</td></tr>
+          <tr><th>Height</th><td>Taller: the chute needs ~8 cm of drop to reach the outer bins at a steep angle.</td><td>Lower: only a short drop.</td></tr>
+          <tr><th>More bins later</th><td>Hard. The servo turns only ~180°, so the fan gets wider and wider.</td><td>Easy. Same motor, slightly bigger ring, 6 sectors.</td></tr>
+          <tr><th>Build effort</th><td>Lower: chute, servo mount, a row of bins.</td><td>A bit higher: turntable, bearing, centre axle, home sensor.</td></tr>
+          <tr><th>Main risk</th><td>The card <b>stops halfway</b> in the chute (friction, static).</td><td>The card <b>lands crooked</b> or flips while it falls.</td></tr>
+          <tr><th>Emptying</th><td>Pull out a bin from the row.</td><td>Lift out a bin from the ring.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <strong>How to decide: one cardboard test per risk, about 15 minutes</strong>
+      <p><b>Chute test:</b> fold a cardboard chute, tape PTFE or baking paper on it, set it to 40°, and slide 20 cards down into a box. Do any stop halfway?</p>
+      <p><b>Ring test:</b> hold a card flat 3 cm above a 95 × 95 mm box and let it go, 20 times. Do any land crooked or bounce out?</p>
+      <p>Keep the one that passes. If both pass, the ring wins on size and on adding bins later, and the chute wins on being simpler to build.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Part 4 · your idea</span>
+      <h2>Cross chute: four fixed directions</h2>
+      <p class="lead">The bins stand still in a cross around the scan spot. A short chute under the scan spot turns to one of four directions, 90° apart. It keeps what is good about both: the bins don't move, as with the chute, and they sit close, as with the ring.</p>
+    </div>
+    <div class="grid">
+      <article class="opt pick">
+        <div class="opt-head"><h3>1+3 · Cross chute</h3><span class="tag alt">fallback</span></div>
+        <figure>
+          <svg viewBox="0 0 320 320" role="img" aria-label="Top view to scale: the scan spot in the middle, four fixed bins on its four sides, the reject bin under the feeder, and a short chute in the middle turning to one of four directions.">
+            <defs><marker id="a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="122.5" y="12.5" width="75" height="95"/>
+              <rect x="122.5" y="212.5" width="75" height="95"/>
+              <rect x="17.5" y="122.5" width="95" height="75"/>
+              <rect x="207.5" y="122.5" width="95" height="75"/>
+            </g>
+            <rect x="118" y="8" width="84" height="60" fill="currentColor" opacity=".12"/>
+            <text x="160" y="36" text-anchor="middle" class="soft">feeder above</text>
+            <text x="160" y="92" text-anchor="middle">R</text>
+            <text x="160" y="268" text-anchor="middle">2</text>
+            <text x="65" y="164" text-anchor="middle">1</text>
+            <text x="255" y="164" text-anchor="middle">3</text>
+            <rect x="125" y="112.5" width="70" height="95" fill="none" stroke="currentColor" stroke-dasharray="4 3"/>
+            <line x1="160" y1="160" x2="222" y2="160" style="stroke:var(--accent)" stroke-width="22" stroke-linecap="round" opacity=".4"/>
+            <line x1="160" y1="160" x2="222" y2="160" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#a6)"/>
+            <circle cx="160" cy="160" r="7" style="fill:var(--bg)" stroke="currentColor" stroke-width="2"/>
+            <path d="M182 196 A44 44 0 0 1 124 186" fill="none" stroke="currentColor" marker-end="url(#a6)"/>
+            <text x="8" y="300" class="soft">top view · ≈ 28.5 × 28.5 cm</text>
+          </svg>
+          <figcaption>The card drops from the scan spot onto the chute, which points at one of four bins. R sits under the feeder.</figcaption>
+        </figure>
+        <div class="pc">
+          <div><b>Good</b><ul><li>Bins stand still: easy to empty, and the motor never carries cards</li><li>Short slide (~6 cm), so it's lower than the long chute</li><li>The empty corners hold the ESP32 and the USB-C board</li></ul></div>
+          <div><b>Bad</b><ul><li>Four directions need <b>270°</b> of turning, and a normal servo only does 180°</li><li>The reject bin under the feeder can only be pulled out like a drawer</li></ul></div>
+        </div>
+      </article>
+      <article class="opt">
+        <div class="opt-head"><h3>The 270° question</h3><span class="tag alt">pick one</span></div>
+        <div class="pc" style="grid-template-columns:1fr">
+          <div><b>a · 270° servo</b><p>These exist but are rarer in the small size. Same code as a normal servo, and it still knows its position. Check before buying.</p></div>
+          <div><b>b · stepper + home sensor</b><p>A 28BYJ-48 turns any amount, plus a hall sensor and magnet (~€1) to find the start. Very cheap, and it can go to 6 directions later.</p></div>
+          <div><b>c · 180° servo, 3 bins only</b><p>Left, front and right. The reject bin becomes "the card stays on the scan spot and the machine stops". Simplest, but it pauses on every unreadable card.</p></div>
+        </div>
+        <p class="lead" style="font-size:.88rem">Lean: <b>b</b>. It's the cheapest, and it also leaves room for more bins later.</p>
+      </article>
+    </div>
+    <div class="note">
+      <strong>The test changes a little</strong>
+      <p>Do the chute test with a <b>short</b> cardboard chute: about 6 cm long at 40°, 20 cards into a box. The ring's drop test is no longer needed for this layout.</p>
+    </div>
+  </section>
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Part 5 · your idea</span>
+      <h2>Spit-out: nothing turns, wheels throw the card to a side</h2>
+      <p class="lead">The card lands on a small platform over two crossed wheels. One wheel can push it left or right, the other front or back. The platform is smaller than the card, so the card tips off the edge and slides down a short slope into the bin. Concept sketch: sizes are rough.</p>
+    </div>
+    <figure><svg viewBox="-262 -285 524 440" role="img" aria-label="Three-quarter view: a flat-topped pyramid in the middle carries the card; three open bins sit left, front and right of it; the feeder stands at the back over the reject bin; the phone lies on a shelf above, camera looking down at the card."><defs><marker id="i5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs><polygon points="-26.0,134.0 231.2,-14.5 231.2,-18.5 -26.0,130.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-26.0,134.0 231.2,-14.5 231.2,-18.5 -26.0,130.0" fill="currentColor" opacity="0.07"/><polygon points="-225.2,19.0 -26.0,134.0 -26.0,130.0 -225.2,15.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-225.2,19.0 -26.0,134.0 -26.0,130.0 -225.2,15.0" fill="currentColor" opacity="0.16"/><polygon points="-225.2,15.0 -26.0,130.0 231.2,-18.5 32.0,-133.5" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="12.1,-45.0 97.0,-94.0 97.0,-152.0 12.1,-103.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="12.1,-45.0 97.0,-94.0 97.0,-152.0 12.1,-103.0" fill="currentColor" opacity="0.07"/><polygon points="8.7,-47.0 12.1,-45.0 12.1,-103.0 8.7,-105.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="8.7,-47.0 12.1,-45.0 12.1,-103.0 8.7,-105.0" fill="currentColor" opacity="0.16"/><polygon points="8.7,-105.0 12.1,-103.0 97.0,-152.0 93.5,-154.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="73.6,-5.0 155.9,-52.5 155.9,-82.5 73.6,-35.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="73.6,-5.0 155.9,-52.5 155.9,-82.5 73.6,-35.0" fill="currentColor" opacity="0.07"/><polygon points="8.7,-42.5 73.6,-5.0 73.6,-35.0 8.7,-72.5" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="8.7,-42.5 73.6,-5.0 73.6,-35.0 8.7,-72.5" fill="currentColor" opacity="0.16"/><polygon points="8.7,-72.5 73.6,-35.0 155.9,-82.5 90.9,-120.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="15.6,-72.5 73.6,-39.0 149.0,-82.5 90.9,-116.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="15.6,-72.5 73.6,-39.0 149.0,-82.5 90.9,-116.0" fill="currentColor" opacity="0.22"/><polygon points="-73.6,5.0 8.7,-42.5 8.7,-72.5 -73.6,-25.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-73.6,5.0 8.7,-42.5 8.7,-72.5 -73.6,-25.0" fill="currentColor" opacity="0.07"/><polygon points="-138.6,-32.5 -73.6,5.0 -73.6,-25.0 -138.6,-62.5" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-138.6,-32.5 -73.6,5.0 -73.6,-25.0 -138.6,-62.5" fill="currentColor" opacity="0.16"/><polygon points="-138.6,-62.5 -73.6,-25.0 8.7,-72.5 -56.3,-110.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-131.6,-62.5 -73.6,-29.0 1.7,-72.5 -56.3,-106.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-131.6,-62.5 -73.6,-29.0 1.7,-72.5 -56.3,-106.0" fill="currentColor" opacity="0.22"/><polygon points="81.4,-5.0 166.3,-54.0 166.3,-112.0 81.4,-63.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="81.4,-5.0 166.3,-54.0 166.3,-112.0 81.4,-63.0" fill="currentColor" opacity="0.07"/><polygon points="77.9,-7.0 81.4,-5.0 81.4,-63.0 77.9,-65.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="77.9,-7.0 81.4,-5.0 81.4,-63.0 77.9,-65.0" fill="currentColor" opacity="0.16"/><polygon points="77.9,-65.0 81.4,-63.0 166.3,-112.0 162.8,-114.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="90.1,-146.0 98.7,-151.0 98.7,-253.0 90.1,-248.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="90.1,-146.0 98.7,-151.0 98.7,-253.0 90.1,-248.0" fill="currentColor" opacity="0.07"/><polygon points="84.9,-149.0 90.1,-146.0 90.1,-248.0 84.9,-251.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="84.9,-149.0 90.1,-146.0 90.1,-248.0 84.9,-251.0" fill="currentColor" opacity="0.16"/><polygon points="84.9,-251.0 90.1,-248.0 98.7,-253.0 93.5,-256.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="157.6,-107.0 166.3,-112.0 166.3,-214.0 157.6,-209.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="157.6,-107.0 166.3,-112.0 166.3,-214.0 157.6,-209.0" fill="currentColor" opacity="0.07"/><polygon points="152.4,-110.0 157.6,-107.0 157.6,-209.0 152.4,-212.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="152.4,-110.0 157.6,-107.0 157.6,-209.0 152.4,-212.0" fill="currentColor" opacity="0.16"/><polygon points="152.4,-212.0 157.6,-209.0 166.3,-214.0 161.1,-217.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="81.4,-63.0 166.3,-112.0 166.3,-149.0 81.4,-100.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="81.4,-63.0 166.3,-112.0 166.3,-149.0 81.4,-100.0" fill="currentColor" opacity="0.07"/><polygon points="8.7,-105.0 81.4,-63.0 81.4,-100.0 8.7,-142.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="8.7,-105.0 81.4,-63.0 81.4,-100.0 8.7,-142.0" fill="currentColor" opacity="0.16"/><polygon points="8.7,-142.0 81.4,-100.0 166.3,-149.0 93.5,-191.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="77.5,-108.2 153.7,-152.2 153.7,-165.2 77.5,-121.2" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="77.5,-108.2 153.7,-152.2 153.7,-165.2 77.5,-121.2" fill="currentColor" opacity="0.07"/><polygon points="22.9,-139.8 77.5,-108.2 77.5,-121.2 22.9,-152.8" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="22.9,-139.8 77.5,-108.2 77.5,-121.2 22.9,-152.8" fill="currentColor" opacity="0.16"/><polygon points="22.9,-152.8 77.5,-121.2 153.7,-165.2 99.2,-196.8" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-8.7,42.5 73.6,-5.0 73.6,-35.0 -8.7,12.5" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-8.7,42.5 73.6,-5.0 73.6,-35.0 -8.7,12.5" fill="currentColor" opacity="0.07"/><polygon points="-73.6,5.0 -8.7,42.5 -8.7,12.5 -73.6,-25.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-73.6,5.0 -8.7,42.5 -8.7,12.5 -73.6,-25.0" fill="currentColor" opacity="0.16"/><polygon points="-73.6,-25.0 -8.7,12.5 73.6,-35.0 8.7,-72.5" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-6.9,-19.0 45.0,-49.0 73.6,-35.0 -8.7,12.5" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-6.9,-19.0 45.0,-49.0 73.6,-35.0 -8.7,12.5" fill="currentColor" opacity="0.07"/><polygon points="-45.0,-41.0 -6.9,-19.0 -8.7,12.5 -73.6,-25.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-45.0,-41.0 -6.9,-19.0 -8.7,12.5 -73.6,-25.0" fill="currentColor" opacity="0.16"/><polygon points="-45.0,-41.0 -6.9,-19.0 45.0,-49.0 6.9,-71.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-65.4,-40.8 -10.8,-9.2 65.4,-53.2 10.8,-84.8" style="fill:var(--accent)" opacity=".55" stroke="currentColor" stroke-width="1"/><polygon points="56.3,80.0 138.6,32.5 138.6,2.5 56.3,50.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="56.3,80.0 138.6,32.5 138.6,2.5 56.3,50.0" fill="currentColor" opacity="0.07"/><polygon points="-8.7,42.5 56.3,80.0 56.3,50.0 -8.7,12.5" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-8.7,42.5 56.3,80.0 56.3,50.0 -8.7,12.5" fill="currentColor" opacity="0.16"/><polygon points="-8.7,12.5 56.3,50.0 138.6,2.5 73.6,-35.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-1.7,12.5 56.3,46.0 131.6,2.5 73.6,-31.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-1.7,12.5 56.3,46.0 131.6,2.5 73.6,-31.0" fill="currentColor" opacity="0.22"/><polygon points="-90.9,90.0 -8.7,42.5 -8.7,12.5 -90.9,60.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-90.9,90.0 -8.7,42.5 -8.7,12.5 -90.9,60.0" fill="currentColor" opacity="0.07"/><polygon points="-155.9,52.5 -90.9,90.0 -90.9,60.0 -155.9,22.5" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-155.9,52.5 -90.9,90.0 -90.9,60.0 -155.9,22.5" fill="currentColor" opacity="0.16"/><polygon points="-155.9,22.5 -90.9,60.0 -8.7,12.5 -73.6,-25.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-149.0,22.5 -90.9,56.0 -15.6,12.5 -73.6,-21.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-149.0,22.5 -90.9,56.0 -15.6,12.5 -73.6,-21.0" fill="currentColor" opacity="0.22"/><polygon points="10.4,-120.0 166.3,-210.0 166.3,-213.0 10.4,-123.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="10.4,-120.0 166.3,-210.0 166.3,-213.0 10.4,-123.0" fill="currentColor" opacity="0.07"/><polygon points="-62.4,-162.0 10.4,-120.0 10.4,-123.0 -62.4,-165.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-62.4,-162.0 10.4,-120.0 10.4,-123.0 -62.4,-165.0" fill="currentColor" opacity="0.16"/><polygon points="-62.4,-165.0 10.4,-123.0 166.3,-213.0 93.5,-255.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="10.4,-128.0 149.0,-208.0 149.0,-216.0 10.4,-136.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="10.4,-128.0 149.0,-208.0 149.0,-216.0 10.4,-136.0" fill="currentColor" opacity="0.07"/><polygon points="-53.7,-165.0 10.4,-128.0 10.4,-136.0 -53.7,-173.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><polygon points="-53.7,-165.0 10.4,-128.0 10.4,-136.0 -53.7,-173.0" fill="currentColor" opacity="0.16"/><polygon points="-53.7,-173.0 10.4,-136.0 149.0,-216.0 84.9,-253.0" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="0.0" y1="-156.0" x2="-65.4" y2="-40.8" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><line x1="0.0" y1="-156.0" x2="-10.8" y2="-9.2" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><line x1="0.0" y1="-156.0" x2="65.4" y2="-53.2" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><line x1="29.4" y1="-30.0" x2="60.6" y2="-12.0" style="stroke:var(--accent)" stroke-width="2.5" marker-end="url(#i5)"/><line x1="-39.8" y1="-24.0" x2="-76.2" y2="-3.0" style="stroke:var(--accent)" stroke-width="2.5" marker-end="url(#i5)"/><line x1="-29.4" y1="-64.0" x2="-60.6" y2="-82.0" style="stroke:var(--accent)" stroke-width="2.5" marker-end="url(#i5)"/><text x="65.0" y="11.5" text-anchor="middle">bin 3</text><text x="-82.3" y="21.5" text-anchor="middle">bin 2</text><text x="-65.0" y="-63.5" text-anchor="middle">bin 1</text><text x="163.0" y="-105.0" text-anchor="start">feeder</text><text x="157.9" y="-146.2" text-anchor="start">card stack</text><text x="163.0" y="-45.0" text-anchor="start">reject bin under the feeder</text><text x="7.6" y="-219.0" text-anchor="end">phone, camera down</text><text x="-19.1" y="-58.0" text-anchor="middle"></text><text x="-225.2" y="43.0" text-anchor="start">≈ 23 × 30 cm, ≈ 17 cm high</text></svg>
+      <figcaption>The whole machine. The card (in colour) lies under the phone camera. Arrows show three of the four ways out. The fourth goes backwards into the reject bin under the feeder.</figcaption>
+    </figure>
+    <div class="grid">
+      <figure><svg viewBox="-160 -165 340 335" role="img" aria-label="Top view: the card lies on a small platform in the middle over two crossed wheels; arrows show the four ways out, to bins 1, 2, 3 and the reject bin under the feeder."><defs><marker id="t5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs><rect x="-112.5" y="-47.5" width="75.0" height="95.0" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="37.5" y="-47.5" width="75.0" height="95.0" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="-37.5" y="47.5" width="75.0" height="95.0" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="-37.5" y="-142.5" width="75.0" height="95.0" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="-42" y="-150" width="84" height="98" fill="currentColor" opacity=".1"/><rect x="-22" y="-30" width="44" height="60" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="-31.5" y="-44" width="63.0" height="88" style="fill:var(--accent)" opacity=".25"/><rect x="-31.5" y="-44" width="63.0" height="88" fill="none" style="stroke:var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"/><rect x="-19" y="-18.5" width="38" height="13.0" fill="currentColor" opacity=".8"/><rect x="-6.5" y="-4" width="13.0" height="38" fill="currentColor" opacity=".8"/><circle cx="0" cy="-36" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="36" y1="0" x2="66" y2="0" style="stroke:var(--accent)" stroke-width="2.5" marker-end="url(#t5)"/><line x1="-36" y1="0" x2="-66" y2="0" style="stroke:var(--accent)" stroke-width="2.5" marker-end="url(#t5)"/><line x1="0" y1="48" x2="0" y2="80" style="stroke:var(--accent)" stroke-width="2.5" marker-end="url(#t5)"/><line x1="0" y1="-48" x2="0" y2="-80" style="stroke:var(--accent)" stroke-width="2.5" marker-end="url(#t5)"/><text x="-88" y="4" text-anchor="middle">1</text><text x="88" y="4" text-anchor="middle">3</text><text x="0" y="112" text-anchor="middle">2</text><text x="0" y="-104" text-anchor="middle">R</text><text x="0" y="-128" text-anchor="middle" class="soft">feeder above</text><line x1="60" y1="-70" x2="22" y2="-14" stroke="currentColor" stroke-dasharray="2 3"/><text x="62" y="-74" text-anchor="start">wheel left/right</text><line x1="60" y1="78" x2="8" y2="22" stroke="currentColor" stroke-dasharray="2 3"/><text x="62" y="82" text-anchor="start">wheel front/back</text><line x1="-60" y1="-70" x2="-4" y2="-38" stroke="currentColor" stroke-dasharray="2 3"/><text x="-62" y="-74" text-anchor="end">ball on top</text><text x="-150" y="158" text-anchor="start" class="soft">top view</text></svg><figcaption>From above. Two wheels poke up through the platform, and a small ball presses the card onto them.</figcaption></figure>
+      <figure><svg viewBox="-160 -190 330 205" role="img" aria-label="Side view: the feeder at the back drops a card onto the platform; the phone lies about 11 cm above it; the card can leave to the front bin or backwards into the reject bin under the feeder."><defs><marker id="s5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs><line x1="-150" y1="0" x2="158" y2="0" stroke="currentColor" stroke-width="2"/><rect x="-142.5" y="-30" width="95.0" height="30" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="47.5" y="-30" width="95.0" height="30" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="-47.5,0 -47.5,-30 -30,-45 30,-45 47.5,-30 47.5,0" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="-15" cy="-34" r="12" fill="none" stroke="currentColor" stroke-width="2"/><rect x="5.5" y="-46" width="13.0" height="24" fill="currentColor" opacity=".8"/><rect x="-44" y="-48" width="88" height="2" style="fill:var(--accent)"/><circle cx="-15" cy="-53" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="-15" y1="-58" x2="-15" y2="-70" stroke="currentColor"/><rect x="52" y="-95" width="98" height="37" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="58" y="-108" width="88" height="13" fill="none" stroke="currentColor" stroke-dasharray="3 2"/><circle cx="100" cy="-58" r="8" fill="none" stroke="currentColor" stroke-width="2"/><rect x="140" y="-160" width="10" height="65" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="-30" y="-159" width="180" height="3" fill="currentColor" opacity=".8"/><rect x="-25" y="-167" width="160" height="8" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="-156" x2="-44" y2="-48" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><line x1="0" y1="-156" x2="44" y2="-48" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><line x1="50" y1="-62" x2="24" y2="-52" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#s5)"/><line x1="-48" y1="-47" x2="-84" y2="-36" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#s5)"/><line x1="48" y1="-44" x2="84" y2="-30" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#s5)"/><line x1="-128" y1="-48" x2="-128" y2="-156" stroke="currentColor" marker-start="url(#s5)" marker-end="url(#s5)"/><text x="-122" y="-100" text-anchor="start">≈ 11 cm</text><text x="-95" y="-10" text-anchor="middle">bin 2</text><text x="95" y="-10" text-anchor="middle">reject</text><text x="100" y="-72" text-anchor="middle">feeder</text><text x="102" y="-112" text-anchor="middle" class="soft">stack</text><text x="40" y="-172" text-anchor="middle">phone</text><text x="-6" y="-120" text-anchor="end" class="soft">camera view</text><text x="-150" y="-178" text-anchor="start" class="soft">side view · front is left</text><text x="-24" y="-62" text-anchor="end">ball</text></svg><figcaption>From the side. The platform sits a little lower than the feeder exit, so a rejected card can go back under the feeder.</figcaption></figure>
+      <figure><svg viewBox="-130 -190 260 205" role="img" aria-label="Front view: the wheel under the card spins one way to throw the card into bin 1 on the left, the other way into bin 3 on the right."><defs><marker id="f5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs><line x1="-125" y1="0" x2="125" y2="0" stroke="currentColor" stroke-width="2"/><rect x="-37.5" y="-108" width="75.0" height="50" fill="currentColor" opacity=".1"/><rect x="-112.5" y="-30" width="75.0" height="30" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="37.5" y="-30" width="75.0" height="30" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="-37.5,0 -37.5,-30 -22,-45 22,-45 37.5,-30 37.5,0" style="fill:var(--bg)" stroke="currentColor" stroke-width="1.5"/><circle cx="0" cy="-34" r="12" fill="none" stroke="currentColor" stroke-width="2"/><rect x="-31.5" y="-48" width="63.0" height="2" style="fill:var(--accent)"/><rect x="-42" y="-159" width="84" height="3" fill="currentColor" opacity=".8"/><rect x="-37" y="-167" width="74" height="8" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="-156" x2="-31.5" y2="-48" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><line x1="0" y1="-156" x2="31.5" y2="-48" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><line x1="36" y1="-47" x2="70" y2="-34" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#f5)"/><line x1="-36" y1="-47" x2="-70" y2="-34" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#f5)"/><text x="-75" y="-10" text-anchor="middle">bin 1</text><text x="75" y="-10" text-anchor="middle">bin 3</text><text x="0" y="-172" text-anchor="middle">phone</text><text x="0" y="-84" text-anchor="middle" class="soft">feeder behind</text><text x="0" y="-10" text-anchor="middle" class="soft">motors</text><text x="-120" y="-178" text-anchor="start" class="soft">front view</text></svg><figcaption>From the front. Spin one way for bin 1, the other way for bin 3.</figcaption></figure>
+    </div>
+    <div class="grid">
+      <article class="opt">
+        <div class="opt-head"><h3>What gets better</h3></div>
+        <div class="pc" style="grid-template-columns:1fr"><div><ul>
+          <li>No turning chute, no start-position sensor</li>
+          <li>No stop gate: the wheels hold the card still for the photo</li>
+          <li>Same motor count as before (feeder + 2 wheels = 3)</li>
+          <li>Smaller: about 23 × 30 cm</li>
+        </ul></div></div>
+      </article>
+      <article class="opt">
+        <div class="opt-head"><h3>What is new and unproven</h3></div>
+        <div class="pc" style="grid-template-columns:1fr"><div><ul>
+          <li>The wheels must be <b>omni wheels</b>: they drive in one direction and roll freely sideways. Normal rubber wheels would block each other.</li>
+          <li><b>Grip:</b> a card weighs under 2 g, so a ball has to press it down. The ball hides a small spot of the card from the camera.</li>
+          <li><b>Twist:</b> the wheels are not exactly under the middle, so the card may turn a little while it leaves.</li>
+        </ul></div></div>
+      </article>
+    </div>
+    <div class="note">
+      <strong>Test before choosing</strong>
+      <p>Build only the platform: one small gear motor, one omni wheel, one ball on top. Throw 20 cards off it. If every card leaves cleanly and lands in a box, this design beats the cross chute. If cards slip or twist, fall back to the cross chute from Part 4.</p>
+    </div>
+  </section>
+</div>

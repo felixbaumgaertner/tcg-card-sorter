@@ -1,0 +1,39 @@
+{
+	"name": "tcg-card-sorter-app",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
+	},
+	"scripts": {
+		"ocr-assets": "node scripts/copy-ocr-assets.mjs",
+		"predev": "npm run ocr-assets",
+		"dev": "vite dev",
+		"prebuild": "npm run ocr-assets",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"precheck": "npm run ocr-assets",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"cards": "node scripts/build-cards.mjs",
+		"test": "vitest run"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-static": "^4.0.1",
+		"@sveltejs/kit": "^3.2.0",
+		"@sveltejs/vite-plugin-svelte": "^7.3.1",
+		"@types/node": "^26.6.11",
+		"svelte": "^5.57.3",
+		"svelte-check": "^4.7.8",
+		"typescript": "^6.0.3",
+		"vite": "^8.3.8",
+		"vitest": "^5.1.2"
+	},
+	"license": "GPL-3.0-or-later",
+	"dependencies": {
+		"@gutenye/ocr-browser": "^1.4.9"
+	}
+}
