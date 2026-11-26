@@ -19,7 +19,10 @@ const CODE =
 	/^([A-Z]{2,3})[^A-Za-z0-9]{0,3}(\d{3}[a-z]?\*?|[A-Z]{1,2}\d{1,2}[a-z]?)(?:\/(\d{3}))?(?![0-9])/;
 
 export function parsePrintedCode(text: string): PrintedCode | null {
-	const m = text.trim().match(CODE);
+	// The slash is sometimes read as a 7 ("0257298" for "025/298"). Seven digits in a row can only
+	// be that, because no number has more than three.
+	const fixed = text.trim().replace(/^([A-Z]{2,3}[^A-Za-z0-9]{0,3}\d{3})7(\d{3})(?![0-9])/, '$1/$2');
+	const m = fixed.match(CODE);
 	if (!m) return null;
 	const [, set, number, total = null] = m;
 	const id = [set, number, total].filter(Boolean).join('-').toLowerCase();

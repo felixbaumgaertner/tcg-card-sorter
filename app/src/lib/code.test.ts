@@ -12,6 +12,7 @@ describe('parsePrintedCode', () => {
 		['UNL·R05a', 'unl-r05a'],
 		['OGN·310/298 /GemLim·02025RGI', 'ogn-310-298'],
 		['OGS • 007/024', 'ogs-007-024'],
+		['OGN·0257298 Six More Vodka Q2025RGI', 'ogn-025-298'],
 		['UNL • 229*/219', 'unl-229*-219'],
 		['PR • 012/013', 'pr-012-013']
 	])('%s -> %s', (text, id) => {

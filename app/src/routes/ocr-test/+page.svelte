@@ -14,6 +14,7 @@
 		/** Quarter turns needed before a code was found (0 = upright). */
 		turns: number;
 		ms: number;
+		engine: Engine;
 		/** Time of each try in ms, in the order tried. */
 		tries: number[];
 		width: number;
@@ -23,7 +24,11 @@
 		cardName: string | null;
 	}
 
+	type Engine = 'wasm' | 'webgpu';
 	let reader: Reader | null = null;
+	let readerEngine: Engine | null = null;
+	let engine = $state<Engine>('wasm');
+	let maxSide = $state(2016);
 	let status = $state('Not loaded yet. Pick a photo to start.');
 	let loadMs = $state<number | null>(null);
 	let busy = $state(false);
@@ -31,35 +36,33 @@
 	let error = $state<string | null>(null);
 
 	async function getReader(): Promise<Reader> {
-		if (reader) return reader;
+		if (reader && readerEngine === engine) return reader;
+		reader = null;
 		status = 'Loading the text reader (about 16 MB, first time only)…';
 		const t0 = performance.now();
 		// Folder that holds the reader's files (filled by scripts/copy-ocr-assets.mjs).
 		const dir = new URL('.', new URL(asset('ocr/ppocr_keys_v1.txt'), location.href)).href;
 		const { default: Ocr } = await import('@gutenye/ocr-browser');
 		reader = (await Ocr.create({
+			onnxOptions: { executionProviders: [engine] },
 			models: {
 				detectionPath: `${dir}ch_PP-OCRv4_det_infer.onnx`,
 				recognitionPath: `${dir}ch_PP-OCRv4_rec_infer.onnx`,
 				dictionaryPath: `${dir}ppocr_keys_v1.txt`
 			}
 		})) as Reader;
+		readerEngine = engine;
 		loadMs = Math.round(performance.now() - t0);
 		return reader;
 	}
 
-	// Longest side of the picture handed to the reader. The full 12-megapixel photo is too heavy
-	// for a phone. In Chromium, 2016 px read 10 of the 11 test photos (all but the one without
-	// flash) and 1600 px read 9.
-	const MAX_SIDE = 2016;
-
 	/**
-	 * Draws the photo onto a canvas, shrunk to MAX_SIDE and turned by `turns` quarter turns, and
+	 * Draws the photo onto a canvas, shrunk to `maxSide` and turned by `turns` quarter turns, and
 	 * returns it as a temporary image address.
 	 */
 	async function prepare(file: File, turns: number) {
 		const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-		const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+		const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
 		const w = Math.round(bitmap.width * scale);
 		const h = Math.round(bitmap.height * scale);
 		const sideways = turns % 2 === 1;
@@ -99,7 +102,7 @@
 			const lines = Array.isArray(out) ? out : out.texts;
 			const code = lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
 			const cardName = code ? (cardById(code.id)?.name ?? null) : null;
-			const attempt = { turns, width, height, lines, code, cardName };
+			const attempt = { turns, width, height, lines, code, cardName, engine };
 			if (code) return { ...attempt, tries, ms: Math.round(performance.now() - t0) };
 			first ??= attempt;
 		}
@@ -139,6 +142,25 @@
 		reads its printed code and shows how long that took. Nothing leaves this device.
 	</p>
 
+	<div class="options">
+		<label>
+			Engine
+			<select bind:value={engine} disabled={busy}>
+				<option value="wasm">Processor (WASM)</option>
+				<option value="webgpu">Graphics chip (WebGPU)</option>
+			</select>
+		</label>
+		<label>
+			Photo size
+			<select bind:value={maxSide} disabled={busy}>
+				<option value={2016}>2016 px</option>
+				<option value={1600}>1600 px</option>
+				<option value={1280}>1280 px</option>
+				<option value={960}>960 px</option>
+			</select>
+		</label>
+	</div>
+
 	<label class="pick" class:busy>
 		{busy ? 'Working…' : 'Take a photo'}
 		<input type="file" accept="image/*" capture="environment" onchange={onPick} disabled={busy} />
@@ -151,7 +173,7 @@
 	<p class="status" role="status">{status}</p>
 	<p class="meta">
 		Device: {navigator.hardwareConcurrency} cores · threads {crossOriginIsolated ? 'on' : 'off'} ·
-		WebGPU {'gpu' in navigator ? 'yes' : 'no'} · photo size {MAX_SIDE} px
+		WebGPU {'gpu' in navigator ? 'yes' : 'no'}
 	</p>
 	{#if loadMs !== null}<p class="meta">Reader loaded in {loadMs} ms.</p>{/if}
 	{#if error}<p class="error">{error}</p>{/if}
@@ -166,7 +188,7 @@
 			</p>
 			<p class="meta">
 				{r.ms} ms · {r.width}×{r.height} px{r.turns ? ` · found after turning the photo` : ''}
-				· tries: {r.tries.join(' + ')} ms
+				· tries: {r.tries.join(' + ')} ms · {r.engine}
 			</p>
 			<details>
 				<summary>All text found ({r.lines.length} lines)</summary>
@@ -187,6 +209,17 @@
 		padding: 1.5rem 1rem;
 		font-family: system-ui, sans-serif;
 		line-height: 1.5;
+	}
+	.options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin: 1rem 0;
+	}
+	.options select {
+		display: block;
+		font: inherit;
+		padding: 0.3rem;
 	}
 	.pick {
 		display: block;
