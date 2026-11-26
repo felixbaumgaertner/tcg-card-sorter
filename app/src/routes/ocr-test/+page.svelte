@@ -14,6 +14,8 @@
 		/** Quarter turns needed before a code was found (0 = upright). */
 		turns: number;
 		ms: number;
+		/** Time of each try in ms, in the order tried. */
+		tries: number[];
 		width: number;
 		height: number;
 		lines: Line[];
@@ -78,27 +80,30 @@
 	/** A card can lie any way round, so the photo is read as taken first and then turned. */
 	async function read(r: Reader, file: File, label: string): Promise<Result> {
 		const t0 = performance.now();
-		let first: Omit<Result, 'ms'> | null = null;
+		let first: Omit<Result, 'ms' | 'tries'> | null = null;
+		const tries: number[] = [];
 		const order = [0, 1, 3, 2];
 		for (const [n, turns] of order.entries()) {
 			status = `${label}, try ${n + 1} of ${order.length}…`;
 			const { url, width, height } = await prepare(file, turns);
 			// Let the browser paint the status line before the reader blocks the page.
 			await new Promise((done) => setTimeout(done, 30));
+			const tTry = performance.now();
 			let out;
 			try {
 				out = await r.detect(url);
 			} finally {
 				URL.revokeObjectURL(url);
 			}
+			tries.push(Math.round(performance.now() - tTry));
 			const lines = Array.isArray(out) ? out : out.texts;
 			const code = lines.map((l) => parsePrintedCode(l.text)).find((c) => c !== null) ?? null;
 			const cardName = code ? (cardById(code.id)?.name ?? null) : null;
 			const attempt = { turns, width, height, lines, code, cardName };
-			if (code) return { ...attempt, ms: Math.round(performance.now() - t0) };
+			if (code) return { ...attempt, tries, ms: Math.round(performance.now() - t0) };
 			first ??= attempt;
 		}
-		return { ...first!, ms: Math.round(performance.now() - t0) };
+		return { ...first!, tries, ms: Math.round(performance.now() - t0) };
 	}
 
 	async function onPick(event: Event) {
@@ -144,6 +149,10 @@
 	</label>
 
 	<p class="status" role="status">{status}</p>
+	<p class="meta">
+		Device: {navigator.hardwareConcurrency} cores · threads {crossOriginIsolated ? 'on' : 'off'} ·
+		WebGPU {'gpu' in navigator ? 'yes' : 'no'} · photo size {MAX_SIDE} px
+	</p>
 	{#if loadMs !== null}<p class="meta">Reader loaded in {loadMs} ms.</p>{/if}
 	{#if error}<p class="error">{error}</p>{/if}
 
@@ -157,6 +166,7 @@
 			</p>
 			<p class="meta">
 				{r.ms} ms · {r.width}×{r.height} px{r.turns ? ` · found after turning the photo` : ''}
+				· tries: {r.tries.join(' + ')} ms
 			</p>
 			<details>
 				<summary>All text found ({r.lines.length} lines)</summary>
